@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>External Referrals — Build AU Prototype v1.3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --ink: #1d1d1f; --ink-med: #4a4a4c; --ink-light: #86868b; --ink-faint: #aeaeb2;
+  --bg: #f5f5f7; --card: #ffffff; --card-hover: #fcfcfd;
+  --border: #e5e5ea; --border-light: #f0f0f2;
+  --positive: #34c759; --positive-bg: #eafaf0; --positive-text: #1a7a32;
+  --negative: #ff3b30; --negative-bg: #fef0ef; --negative-text: #b81d14;
+  --warning: #ff9500; --warning-bg: #fff4e5; --warning-text: #8a5d00;
+  --neutral-bg: #f2f2f7;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --radius: 12px; --radius-sm: 8px; --sidebar-w: 56px;
+  --green: #2d6a2d; --green-light: #eef5ee;
+}
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg); color: var(--ink);
+  line-height: 1.5; -webkit-font-smoothing: antialiased;
+  display: flex; min-height: 100vh;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; padding: 12px 0;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 60;
+}
+.sidebar-logo {
+  width: 32px; height: 32px; margin-bottom: 20px; border-radius: 8px;
+  background: var(--green); display: flex; align-items: center; justify-content: center;
+}
+.sidebar-logo svg { width: 18px; height: 18px; fill: white; }
+.sidebar-nav { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.sidebar-item {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none; background: none; position: relative; transition: all 0.15s;
+}
+.sidebar-item svg { width: 20px; height: 20px; fill: var(--ink-faint); transition: fill 0.15s; }
+.sidebar-item:hover { background: var(--neutral-bg); }
+.sidebar-item:hover svg { fill: var(--ink-med); }
+.sidebar-item.active { background: var(--green-light); }
+.sidebar-item.active svg { fill: var(--green); }
+.sidebar-item.active::before {
+  content: ''; position: absolute; left: -8px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 20px; border-radius: 0 3px 3px 0; background: var(--green);
+}
+.sidebar-bottom { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-bottom: 4px; }
+.sidebar-divider { width: 28px; height: 1px; background: var(--border); margin: 8px 0; }
+
+/* ── MAIN AREA ────────────────────────────────────── */
+.main-area { flex: 1; margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ── TOPBAR ───────────────────────────────────────── */
+.topbar {
+  background: var(--card); border-bottom: 1px solid var(--border);
+  padding: 0 28px; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.logo-text { font-weight: 700; font-size: 15px; color: var(--green); letter-spacing: -0.3px; }
+.logo-sub { font-weight: 300; color: var(--ink-light); margin-left: 4px; font-size: 12px; }
+.topbar-sep { width: 1px; height: 18px; background: var(--border); }
+.breadcrumb { font-size: 12px; color: var(--ink-light); display: flex; align-items: center; gap: 5px; }
+.breadcrumb .bc-link { color: var(--ink-light); cursor: pointer; transition: color 0.1s; }
+.breadcrumb .bc-link:hover { color: var(--ink); }
+.breadcrumb .bc-sep { color: var(--border); font-size: 14px; }
+.breadcrumb .bc-current { color: var(--ink-med); font-weight: 500; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-search-wrap { position: relative; }
+.topbar-search {
+  width: 190px; padding: 6px 10px 6px 30px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 12px; font-family: 'Inter', sans-serif;
+  color: var(--ink); background: var(--bg); outline: none;
+}
+.topbar-search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--ink-faint); }
+.icon-btn {
+  width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; background: none; border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.15s; position: relative;
+}
+.icon-btn:hover { background: var(--neutral-bg); }
+.icon-btn svg { width: 14px; height: 14px; fill: var(--ink-light); }
+.notif-dot {
+  position: absolute; top: -3px; right: -3px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--negative); color: white;
+  font-size: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+}
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #b8c1ec, #a5b4fc);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: white; cursor: pointer;
+}
+
+/* ── SCREENS ─────────────────────────────────────── */
+.screen { display: none; }
+.screen.active { display: block; }
+.page { max-width: 1260px; margin: 0 auto; padding: 22px 28px 80px; width: 100%; }
+
+/* ── PAGE HEADER ─────────────────────────────────── */
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+.page-da-num { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+.page-meta { font-size: 12px; color: var(--ink-light); margin-top: 3px; }
+.page-meta strong { color: var(--ink-med); font-weight: 500; }
+.page-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ── BUTTONS ──────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 15px; border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif;
+  cursor: pointer; border: none; transition: all 0.15s; white-space: nowrap;
+}
+.btn-primary { background: var(--green); color: white; }
+.btn-primary:hover { background: #245524; }
+.btn-secondary { background: var(--card); color: var(--ink-med); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--neutral-bg); }
+.btn-sm { padding: 5px 11px; font-size: 11px; }
+.btn-ghost { background: none; color: var(--ink-light); border: none; padding: 5px 8px; font-size: 11px; font-weight: 500; border-radius: 6px; }
+.btn-ghost:hover { color: var(--ink); background: var(--neutral-bg); }
+.btn-danger-sm { background: var(--negative-bg); color: var(--negative-text); border: 1px solid #ffc9c6; padding: 4px 9px; font-size: 11px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+.btn-danger-sm:hover { background: #fde0de; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 12px;
+  color: var(--ink-light); cursor: pointer; border: none; background: none;
+  font-family: 'Inter', sans-serif; margin-bottom: 16px; padding: 0; transition: color 0.15s;
+}
+.back-link:hover { color: var(--ink); }
+
+/* ── PANEL CARDS ──────────────────────────────────── */
+.panel { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); overflow: hidden; }
+.panel-header { padding: 11px 16px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+.panel-title { font-size: 12px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 7px; }
+.panel-count { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; background: var(--neutral-bg); color: var(--ink-light); }
+.panel-count.red { background: var(--negative-bg); color: var(--negative-text); }
+.panel-count.green { background: var(--positive-bg); color: var(--positive-text); }
+.panel-count.amber { background: var(--warning-bg); color: var(--warning-text); }
+.panel-body { padding: 12px 16px; }
+.panel-footer { padding: 9px 16px; border-top: 1px solid var(--border-light); background: var(--neutral-bg); }
+.view-all-link { font-size: 11px; font-weight: 600; color: var(--green); cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+.view-all-link:hover { color: #1a4a1a; }
+
+/* ── BADGES & CHIPS ───────────────────────────────── */
+.badge { font-size: 10px; padding: 3px 8px; border-radius: 5px; font-weight: 600; display: inline-block; white-space: nowrap; }
+.badge-green { background: var(--positive-bg); color: var(--positive-text); }
+.badge-amber { background: var(--warning-bg); color: var(--warning-text); }
+.badge-red { background: var(--negative-bg); color: var(--negative-text); }
+.badge-neutral { background: var(--neutral-bg); color: var(--ink-light); }
+.badge-blue { background: #e8f4fd; color: #1a6fa0; }
+
+/* ── AGENCY TOGGLE SWITCH ── */
+.toggle-switch { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-slider {
+  position: absolute; cursor: pointer; inset: 0;
+  background: var(--border); border-radius: 20px; transition: background 0.2s;
+}
+.toggle-slider::before {
+  content: ''; position: absolute; width: 14px; height: 14px;
+  left: 3px; bottom: 3px; background: #fff; border-radius: 50%;
+  transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--positive); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+.ref-type { font-size: 9px; padding: 2px 7px; border-radius: 4px; font-weight: 600; display: inline-block; white-space: nowrap; }
+.ref-type.concurrence { background: #f0eafa; color: #5a3d9e; }
+.ref-type.referral { background: #e8f4fd; color: #1a6fa0; }
+.ref-type.integrated { background: var(--warning-bg); color: var(--warning-text); }
+.ref-type.notification { background: var(--neutral-bg); color: var(--ink-light); }
+
+.via-chip { font-size: 9px; padding: 2px 7px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+.via-chip.portal { background: var(--green-light); color: var(--green); }
+.via-chip.manual { background: var(--neutral-bg); color: var(--ink-light); }
+
+.status-chip { font-size: 9px; padding: 3px 8px; border-radius: 5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.status-chip .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.status-chip.dca { background: var(--warning-bg); color: var(--warning-text); }
+.status-chip.dca .dot { background: var(--warning); animation: pulse-dot 1.5s ease-in-out infinite; }
+.status-chip.pending { background: var(--neutral-bg); color: var(--ink-light); }
+.status-chip.pending .dot { background: var(--ink-faint); }
+.status-chip.received { background: var(--positive-bg); color: var(--positive-text); }
+.status-chip.received .dot { background: var(--positive); }
+.status-chip.awaiting { background: #e8f4fd; color: #1a6fa0; }
+.status-chip.awaiting .dot { background: #3b9ede; }
+.status-chip.overdue { background: var(--negative-bg); color: var(--negative-text); }
+.status-chip.overdue .dot { background: var(--negative); }
+.status-chip.reviewed { background: #f0eafa; color: #5a3d9e; }
+.status-chip.reviewed .dot { background: #7c4dbd; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── STATUS EDIT DROPDOWN (manual referrals) ── */
+.status-edit-wrap { position: relative; display: inline-block; }
+.status-edit-btn { cursor: pointer; user-select: none; }
+.status-edit-btn::after { content: ' ▾'; font-size: 8px; opacity: 0.6; }
+.status-edit-btn:hover { opacity: 0.85; }
+.status-dropdown {
+  position: fixed; z-index: 9000;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: var(--shadow-md);
+  min-width: 175px; overflow: hidden;
+}
+.status-dropdown.hidden { display: none; }
+.status-dropdown-item {
+  padding: 8px 12px; cursor: pointer; font-size: 12px; color: var(--ink-med);
+  display: flex; align-items: center; gap: 8px; transition: background 0.1s;
+}
+.status-dropdown-item:hover { background: var(--neutral-bg); }
+.status-dropdown-item .sd-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.outcome-select {
+  font-size: 11px; font-family: inherit; border: 1px solid var(--border);
+  border-radius: 5px; padding: 3px 6px; background: var(--card);
+  color: var(--ink-med); cursor: pointer; outline: none;
+}
+.outcome-select:focus { border-color: var(--green); }
+
+/* ── THREE-DOT / OVERFLOW MENU ── */
+.three-dot-btn {
+  width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center;
+  justify-content: center; background: none; border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.15s; flex-shrink: 0; font-size: 17px;
+  color: var(--ink-faint); line-height: 1; letter-spacing: -1px;
+}
+.three-dot-btn:hover { background: var(--neutral-bg); color: var(--ink-med); border-color: transparent; }
+.overflow-menu {
+  position: fixed; z-index: 9000; background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: var(--shadow-md); min-width: 185px; overflow: hidden;
+}
+.overflow-menu.hidden { display: none; }
+.overflow-menu-item {
+  padding: 9px 14px; cursor: pointer; font-size: 12px; color: var(--ink-med);
+  display: flex; align-items: center; gap: 9px; transition: background 0.1s;
+}
+.overflow-menu-item:hover { background: var(--neutral-bg); }
+.overflow-menu-item.danger { color: var(--negative-text); }
+.overflow-menu-item.danger:hover { background: var(--negative-bg); }
+.overflow-menu-divider { height: 1px; background: var(--border-light); }
+
+/* ── RICH TEXT EDITOR ── */
+.rte-wrap { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.rte-toolbar {
+  display: flex; gap: 2px; padding: 6px 8px; background: var(--neutral-bg);
+  border-bottom: 1px solid var(--border);
+}
+.rte-btn {
+  width: 28px; height: 26px; border: none; background: none; border-radius: 4px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--ink-med); font-family: inherit; transition: background 0.1s;
+}
+.rte-btn:hover { background: var(--border); }
+.rte-sep { width: 1px; background: var(--border); margin: 3px 2px; }
+.rte-editor {
+  min-height: 130px; padding: 10px 12px; font-size: 13px; color: var(--ink-med);
+  line-height: 1.6; outline: none; font-family: inherit;
+}
+.rte-editor:empty::before { content: attr(data-ph); color: var(--ink-faint); pointer-events: none; display: block; }
+
+/* ── CONDITION LIBRARY ── */
+.cond-search { width: 100%; margin-bottom: 12px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-family: inherit; outline: none; }
+.cond-search:focus { border-color: var(--green); }
+.condition-list { max-height: 300px; overflow-y: auto; }
+.condition-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border-light); }
+.condition-item:last-child { border-bottom: none; }
+.condition-item input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; accent-color: var(--green); cursor: pointer; }
+.condition-item-body { font-size: 12px; color: var(--ink-med); line-height: 1.5; cursor: pointer; }
+.condition-tag { font-size: 10px; font-weight: 600; color: var(--ink-light); background: var(--neutral-bg); padding: 1px 6px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
+
+.outcome-val { font-size: 11px; font-weight: 500; }
+.outcome-val.approve-cond { color: var(--positive-text); }
+.outcome-val.approve { color: var(--positive-text); }
+.outcome-val.refuse { color: var(--negative-text); }
+.outcome-val.advice { color: #1a6fa0; }
+.outcome-val.blank { color: var(--ink-faint); font-weight: 400; font-style: italic; }
+
+/* ── DCA ALERT ────────────────────────────────────── */
+.dca-alert {
+  background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px;
+  padding: 10px 14px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px;
+}
+.dca-alert-icon { font-size: 15px; flex-shrink: 0; }
+.dca-alert-title { font-size: 11px; font-weight: 600; color: #92400e; margin-bottom: 2px; }
+.dca-alert-desc { font-size: 11px; color: #78350f; line-height: 1.4; }
+.dca-alert-code { font-family: monospace; font-size: 10px; background: #fef3c7; padding: 1px 5px; border-radius: 3px; }
+
+/* ── MISSION CONTROL GRIDS ────────────────────────── */
+.mc-row { display: grid; gap: 14px; margin-bottom: 14px; }
+.mc-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+.mc-row-int-ext { grid-template-columns: 1fr 1fr; }
+.mc-row-2 { grid-template-columns: 1fr 1fr; }
+
+/* App summary */
+.summary-label { font-size: 10px; font-weight: 500; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.summary-value { font-size: 12px; color: var(--ink-med); }
+.summary-value.primary { font-weight: 600; color: var(--ink); }
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+.summary-field { margin-bottom: 7px; }
+
+.map-placeholder {
+  background: #e8ede8; border-radius: 8px; height: 155px;
+  display: flex; align-items: center; justify-content: center; color: var(--ink-faint);
+  font-size: 12px; position: relative; overflow: hidden;
+}
+.map-placeholder::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(rgba(160,185,160,0.25) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(160,185,160,0.25) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.map-label { z-index: 1; font-size: 11px; background: rgba(255,255,255,0.8); padding: 4px 10px; border-radius: 6px; }
+
+.ps-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 5px 0; border-bottom: 1px solid var(--border-light); font-size: 11px; }
+.ps-row:last-child { border-bottom: none; }
+.ps-key { color: var(--ink-light); width: 120px; flex-shrink: 0; }
+.ps-val { color: var(--ink-med); font-weight: 500; text-align: right; flex: 1; }
+.ps-val.link { color: #1a6fa0; cursor: pointer; }
+
+/* Compliance */
+.compliance-pct { font-size: 22px; font-weight: 700; color: var(--ink); }
+.compliance-sub { font-size: 11px; color: var(--ink-light); }
+.compliance-bar-wrap { background: var(--border); border-radius: 4px; height: 5px; overflow: hidden; margin: 7px 0; }
+.compliance-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #34c759, #2ab44a); }
+.checklist-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--ink-med); padding: 3px 0; }
+.ci-icon { width: 14px; height: 14px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; }
+.ci-done { background: var(--positive-bg); color: var(--positive-text); }
+.ci-partial { background: var(--warning-bg); color: var(--warning-text); }
+.ci-todo { background: var(--neutral-bg); color: var(--ink-faint); }
+
+/* Internal referrals mini table */
+.int-ref-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.int-ref-table th { text-align: left; padding: 5px 8px; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--ink-faint); border-bottom: 1px solid var(--border); background: var(--neutral-bg); }
+.int-ref-table td { padding: 8px 8px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+.int-ref-table tr:last-child td { border-bottom: none; }
+.int-ref-team { font-weight: 600; color: var(--ink); }
+
+/* External referrals mini table */
+.ext-mini-table { width: 100%; font-size: 11px; border-collapse: collapse; }
+.ext-mini-table td { padding: 7px 6px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+.ext-mini-table tr:last-child td { border-bottom: none; }
+.ext-mini-agency { font-weight: 600; color: var(--ink); max-width: 180px; }
+.ext-mini-age { color: var(--ink-light); text-align: right; white-space: nowrap; }
+
+/* Documents */
+.doc-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border-light); }
+.doc-item:last-child { border-bottom: none; }
+.doc-icon { width: 24px; height: 24px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; flex-shrink: 0; }
+.doc-icon.pdf { background: var(--negative-bg); color: var(--negative-text); }
+.doc-icon.dwg { background: #e8f4fd; color: #1a6fa0; }
+.doc-name { font-size: 11px; color: var(--ink-med); flex: 1; line-height: 1.3; }
+
+/* Conditions & RFI */
+.conditions-count { font-size: 26px; font-weight: 700; color: var(--ink); }
+.conditions-sub { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+.rfi-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border-light); font-size: 11px; }
+.rfi-row:last-child { border-bottom: none; }
+
+/* Assessment */
+.assess-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border-light); font-size: 11px; }
+.assess-row:last-child { border-bottom: none; }
+.assess-key { color: var(--ink-light); }
+.assess-val { color: var(--ink-med); font-weight: 500; text-align: right; }
+.reviewer-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ink-med); }
+.reviewer-avatar { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, #b8c1ec, #a5b4fc); display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 700; color: white; }
+
+/* CIR attributes */
+.cir-row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border-light); font-size: 11px; }
+.cir-row:last-child { border-bottom: none; }
+.cir-key { color: var(--ink-light); width: 130px; flex-shrink: 0; }
+.cir-val { color: var(--ink-med); font-weight: 500; }
+.cir-clause-tag { display: inline-block; background: var(--neutral-bg); border-radius: 4px; padding: 1px 6px; margin: 1px 2px 1px 0; font-size: 10px; color: var(--ink-light); }
+
+/* ── SCREEN 2 — EXT REFS ──────────────────────────── */
+.er-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+.er-title { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.4px; display: flex; align-items: center; gap: 10px; }
+.er-subtitle { font-size: 12px; color: var(--ink-light); margin-top: 2px; }
+.er-actions { display: flex; gap: 8px; align-items: center; }
+
+.filter-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.filter-tabs { display: flex; gap: 2px; }
+.filter-tab { padding: 5px 13px; border-radius: 6px; font-size: 11px; font-weight: 500; color: var(--ink-faint); cursor: pointer; border: none; background: none; font-family: 'Inter', sans-serif; transition: all 0.12s; }
+.filter-tab.active { background: var(--neutral-bg); color: var(--ink); }
+.filter-tab:hover:not(.active) { color: var(--ink-light); }
+.filter-count { font-size: 9px; background: var(--border); color: var(--ink-faint); padding: 1px 5px; border-radius: 8px; font-weight: 600; margin-left: 3px; }
+.filter-count.active { background: var(--ink); color: white; }
+
+.er-table-wrap { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); overflow: hidden; }
+.er-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.er-table th {
+  text-align: left; padding: 9px 12px; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px; color: var(--ink-faint);
+  border-bottom: 1px solid var(--border); background: var(--neutral-bg); white-space: nowrap;
+}
+.er-table td { padding: 11px 12px; border-bottom: 1px solid var(--border-light); color: var(--ink-med); vertical-align: middle; }
+.er-table tr:last-child td { border-bottom: none; }
+.er-table tr:hover td { background: var(--card-hover); }
+.er-agency-name { font-weight: 600; color: var(--ink); font-size: 12px; }
+.er-clause { font-size: 10px; color: var(--ink-light); margin-top: 2px; max-width: 200px; }
+.er-case-ref { font-family: monospace; font-size: 11px; color: var(--ink-light); }
+.er-doc-link { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: #1a6fa0; cursor: pointer; margin-top: 3px; }
+.er-doc-link:hover { text-decoration: underline; }
+.action-group { display: flex; gap: 4px; align-items: center; }
+.note-btn { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: none; border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+.note-btn:hover { background: var(--neutral-bg); border-color: #b8c0d0; }
+.note-btn svg { width: 13px; height: 13px; fill: var(--ink-faint); transition: fill 0.15s; }
+.note-btn:hover svg { fill: var(--ink-med); }
+
+/* ── ADMIN SCREEN ─────────────────────────────────── */
+.admin-section { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); margin-bottom: 20px; overflow: hidden; }
+.admin-section-header { padding: 13px 20px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+.admin-section-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+.admin-section-sub { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+.admin-body { padding: 20px; }
+
+.duration-row { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+.duration-row:last-child { border-bottom: none; padding-bottom: 0; }
+.duration-label-col { flex: 1; }
+.duration-label { font-size: 13px; font-weight: 500; color: var(--ink); }
+.duration-desc { font-size: 11px; color: var(--ink-light); margin-top: 2px; }
+.duration-ctrl { display: flex; align-items: center; gap: 8px; }
+.duration-input {
+  width: 70px; padding: 7px 10px; text-align: center;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif;
+  color: var(--ink); background: var(--bg); outline: none; transition: border-color 0.15s;
+}
+.duration-input:focus { border-color: var(--green); background: white; }
+.duration-unit { font-size: 12px; color: var(--ink-light); }
+
+.agency-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.agency-table th { text-align: left; padding: 8px 14px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--ink-faint); border-bottom: 1px solid var(--border); background: var(--neutral-bg); }
+.agency-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); color: var(--ink-med); vertical-align: middle; }
+.agency-table tr:last-child td { border-bottom: none; }
+.agency-table tr:hover td { background: var(--card-hover); }
+.agency-name-col { font-weight: 600; color: var(--ink); }
+
+/* ── MODAL ────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); width: 500px; max-width: 95vw;
+  transform: translateY(12px) scale(0.98); transition: all 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0) scale(1); }
+.modal-sm { width: 380px; }
+.modal-header { padding: 17px 20px 13px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+.modal-close { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: none; border: 1px solid var(--border); cursor: pointer; font-size: 13px; color: var(--ink-light); font-family: 'Inter', sans-serif; transition: all 0.15s; }
+.modal-close:hover { background: var(--neutral-bg); }
+.modal-body { padding: 18px 20px; }
+.modal-footer { padding: 13px 20px; border-top: 1px solid var(--border-light); display: flex; justify-content: flex-end; gap: 8px; }
+
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--ink-light); margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.4px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 13px; font-family: 'Inter', sans-serif;
+  color: var(--ink); background: var(--bg); outline: none; transition: border-color 0.15s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--green); background: white; }
+.form-textarea { min-height: 72px; resize: vertical; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-hint { font-size: 10px; color: var(--ink-faint); margin-top: 4px; }
+
+/* ── PROTO TAG ────────────────────────────────────── */
+/* ── PASSWORD GATE ── */
+#pw-gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #f5f5f7;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+#pw-gate.hidden { display: none; }
+.pw-card {
+  background: #fff; border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+  padding: 40px 44px; width: 360px; text-align: center;
+}
+.pw-logo {
+  font-size: 13px; font-weight: 600; color: #2d6a2d; letter-spacing: 0.3px;
+  margin-bottom: 6px;
+}
+.pw-logo span { font-weight: 300; color: #86868b; margin-left: 4px; }
+.pw-heading {
+  font-size: 18px; font-weight: 600; color: #1d1d1f; margin-bottom: 6px;
+}
+.pw-sub {
+  font-size: 12px; color: #86868b; margin-bottom: 24px; line-height: 1.5;
+}
+.pw-input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid #e5e5ea;
+  border-radius: 8px; font-size: 14px; font-family: inherit;
+  outline: none; transition: border-color 0.15s; margin-bottom: 12px;
+  color: #1d1d1f;
+}
+.pw-input:focus { border-color: #2d6a2d; }
+.pw-input.error { border-color: #ff3b30; }
+.pw-btn {
+  width: 100%; padding: 11px; background: #2d6a2d; color: #fff;
+  border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+  font-family: inherit; cursor: pointer; transition: background 0.15s;
+}
+.pw-btn:hover { background: #245824; }
+.pw-error {
+  font-size: 11px; color: #ff3b30; margin-top: 8px; min-height: 16px;
+}
+
+.proto-tag {
+  position: fixed; bottom: 14px; right: 14px; font-size: 10px; color: var(--ink-faint);
+  background: var(--card); padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm); z-index: 100;
+}
+
+/* ── TOAST ────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: white; padding: 10px 20px; border-radius: 8px;
+  font-size: 12px; font-weight: 500; box-shadow: var(--shadow-lg);
+  opacity: 0; transition: all 0.3s ease; z-index: 300; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── SECTION LABEL ────────────────────────────────── */
+.section-label { font-size: 11px; font-weight: 600; color: var(--ink-light); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="pw-gate">
+  <div class="pw-card">
+    <div class="pw-logo">Build AU <span>by Objective</span></div>
+    <div class="pw-heading">External Referrals Prototype</div>
+    <div class="pw-sub">This is a concept demonstration. Enter the access code to continue.</div>
+    <input type="password" id="pw-input" class="pw-input" placeholder="Access code" onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="pw-btn" onclick="checkPw()">Continue</button>
+    <div class="pw-error" id="pw-error"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SHARED SIDEBAR
+═══════════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+  </div>
+  <div class="sidebar-nav">
+    <button class="sidebar-item" title="Dashboard" onclick="showToast('Dashboard')">
+      <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg>
+    </button>
+    <button class="sidebar-item active" title="Applications">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+    </button>
+    <button class="sidebar-item" title="Referrals" onclick="showToast('Referrals portfolio')">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+    <button class="sidebar-item" title="Team" onclick="showToast('Team view')">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    </button>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="sidebar-divider"></div>
+    <button class="sidebar-item" title="Settings" onclick="showToast('System settings')">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN AREA
+═══════════════════════════════════════════════════ -->
+<div class="main-area">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="logo-text">Objective Build<span class="logo-sub">NSW Planning</span></span>
+      <div class="topbar-sep"></div>
+      <div class="breadcrumb" id="breadcrumb">
+        <span class="bc-link" onclick="goTo('mc')">Applications</span>
+        <span class="bc-sep">/</span>
+        <span class="bc-current">DA949778</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search-wrap">
+        <span class="topbar-search-icon">⌕</span>
+        <input class="topbar-search" placeholder="Search DAs, addresses…" />
+      </div>
+      <button class="icon-btn" title="Notifications" onclick="showToast('2 notifications')">
+        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <div class="notif-dot">2</div>
+      </button>
+      <div class="avatar" title="Sean Richards">SR</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SCREEN 1: MISSION CONTROL
+  ═══════════════════════════════════════════════ -->
+  <div class="screen active" id="screen-mc">
+    <div class="page">
+
+      <!-- Page header -->
+      <div class="page-header">
+        <div>
+          <div class="page-da-num">
+            DA949778
+            <span class="badge badge-amber">Under Review</span>
+          </div>
+          <div class="page-meta">
+            254 Samuel Street, Surry Hills NSW 2010 &nbsp;·&nbsp;
+            <strong>43 days</strong> &nbsp;·&nbsp;
+            Sent: 26 May 2026 &nbsp;·&nbsp; Reviewer: Sean Richards
+          </div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm" onclick="showToast('Editing DA details')">Edit</button>
+          <button class="btn btn-secondary btn-sm" onclick="showToast('Viewing history')">History</button>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Determination blocked — DCA check in progress (DPE_E100)')">Determine ›</button>
+        </div>
+      </div>
+
+      <!-- Row 1: Application Details | Map | Planning Summary -->
+      <div class="mc-row mc-row-3">
+
+        <!-- Application Details -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Application Details</span>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Edit application details')">Edit</button>
+          </div>
+          <div class="panel-body">
+            <div class="summary-grid">
+              <div class="summary-field">
+                <div class="summary-label">PAN ID</div>
+                <div class="summary-value">PAN-12604302</div>
+              </div>
+              <div class="summary-field">
+                <div class="summary-label">Application</div>
+                <div class="summary-value primary">DA949778</div>
+              </div>
+              <div class="summary-field">
+                <div class="summary-label">Application type</div>
+                <div class="summary-value">Development application</div>
+              </div>
+              <div class="summary-field">
+                <div class="summary-label">Development type</div>
+                <div class="summary-value">Residential</div>
+              </div>
+              <div class="summary-field" style="grid-column:1/-1">
+                <div class="summary-label">Description</div>
+                <div class="summary-value">Demolition of existing dwelling and construction of a new two storey dwelling house and carport</div>
+              </div>
+              <div class="summary-field">
+                <div class="summary-label">Applicant name</div>
+                <div class="summary-value">Arlene (Phoenix) Williamson</div>
+              </div>
+              <div class="summary-field">
+                <div class="summary-label">EDC (ex GST)</div>
+                <div class="summary-value">AU$423,725</div>
+              </div>
+              <div class="summary-field">
+                <div class="summary-label">Applicant phone</div>
+                <div class="summary-value">+61 430 408 776</div>
+              </div>
+              <div class="summary-field">
+                <div class="summary-label">Applicant email</div>
+                <div class="summary-value">Dangelo51@yahoo.com</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map Preview -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Map Preview</span>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Opening full map')">Expand</button>
+          </div>
+          <div class="panel-body">
+            <div class="map-placeholder">
+              <span class="map-label">📍 254 Samuel St, Surry Hills</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Planning Summary -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Planning Summary</span>
+          </div>
+          <div class="panel-body">
+            <div class="ps-row"><span class="ps-key">LEP</span><span class="ps-val link">Sydney LEP 2012</span></div>
+            <div class="ps-row"><span class="ps-key">Land zoning</span><span class="ps-val">R1: General Residential</span></div>
+            <div class="ps-row"><span class="ps-key">Heritage</span><span class="ps-val">Reservoir St & Fosterville Significance: Local</span></div>
+            <div class="ps-row"><span class="ps-key">Height of building</span><span class="ps-val">9 m</span></div>
+            <div class="ps-row"><span class="ps-key">Floor space ratio</span><span class="ps-val">1.75:1</span></div>
+            <div class="ps-row"><span class="ps-key">Acid sulfate soils</span><span class="ps-val">Class 5</span></div>
+            <div class="ps-row"><span class="ps-key">Special provisions</span><span class="ps-val">SEPP (Sustainable Buildings) 2022</span></div>
+            <div class="ps-row"><span class="ps-key">Regional plan boundary</span><span class="ps-val">Greater Sydney</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Internal Referrals | External Referrals | Compliance -->
+      <div class="mc-row mc-row-3">
+
+        <!-- Internal Referrals (renamed) -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Internal Referrals <span class="panel-count">2</span></span>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Refer to internal team')">+ Refer</button>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="int-ref-table">
+              <thead>
+                <tr>
+                  <th>Team</th>
+                  <th>Assigned</th>
+                  <th>Referred</th>
+                  <th>Age</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="int-ref-team">Engineering</td>
+                  <td style="color:var(--ink-med)">Sean Richards</td>
+                  <td style="color:var(--ink-light)">06 May 2026</td>
+                  <td style="color:var(--ink-light)">0 days</td>
+                  <td><span class="badge badge-green">Complete</span></td>
+                </tr>
+                <tr>
+                  <td class="int-ref-team">Heritage</td>
+                  <td style="color:var(--ink-faint)">—</td>
+                  <td style="color:var(--ink-light)">06 May 2026</td>
+                  <td style="color:var(--ink-light)">43 days</td>
+                  <td><span class="badge badge-neutral">Unassigned</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-footer">
+            <button class="view-all-link" onclick="showToast('View all internal referrals')">View all referrals →</button>
+          </div>
+        </div>
+
+        <!-- External Referrals (new) -->
+        <div class="panel" style="border: 2px solid var(--negative); box-shadow: 0 0 0 1px rgba(255,59,48,0.15), var(--shadow-sm);">
+          <div class="panel-header">
+            <span class="panel-title">
+              External Referrals
+              <span class="panel-count amber">4</span>
+            </span>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="ext-mini-table">
+              <thead>
+                <tr>
+                  <th style="padding:5px 8px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-faint);background:var(--neutral-bg);border-bottom:1px solid var(--border)">Agency</th>
+                  <th style="padding:5px 8px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-faint);background:var(--neutral-bg);border-bottom:1px solid var(--border)">Via</th>
+                  <th style="padding:5px 8px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-faint);background:var(--neutral-bg);border-bottom:1px solid var(--border)">Age</th>
+                  <th style="padding:5px 8px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink-faint);background:var(--neutral-bg);border-bottom:1px solid var(--border)">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="ext-mini-agency">Development Coordination Authority</div></td>
+                  <td><span class="via-chip portal">● Portal</span></td>
+                  <td class="ext-mini-age">24 days</td>
+                  <td><span class="status-chip dca"><span class="dot"></span>DCA Check</span></td>
+                </tr>
+                <tr>
+                  <td><div class="ext-mini-agency">Transport for NSW</div></td>
+                  <td><span class="via-chip portal">● Portal</span></td>
+                  <td class="ext-mini-age">24 days</td>
+                  <td><span class="status-chip received"><span class="dot"></span>Response Received</span></td>
+                </tr>
+                <tr>
+                  <td><div class="ext-mini-agency">NSW Heritage Office</div></td>
+                  <td><span class="via-chip portal">● Portal</span></td>
+                  <td class="ext-mini-age">19 days</td>
+                  <td><span class="status-chip pending"><span class="dot"></span>Pending</span></td>
+                </tr>
+                <tr>
+                  <td><div class="ext-mini-agency">NSW Police Force</div></td>
+                  <td><span class="via-chip manual">Manual</span></td>
+                  <td class="ext-mini-age">12 days</td>
+                  <td><span class="status-chip dca"><span class="dot"></span>In Progress</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-footer">
+            <button class="view-all-link" onclick="goToExtRefs()">View all referrals →</button>
+          </div>
+        </div>
+
+        <!-- Compliance Checklist -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Compliance Checklist</span>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('View full checklist')">View</button>
+          </div>
+          <div class="panel-body">
+            <div class="compliance-pct">28%</div>
+            <div class="compliance-sub">14 of 50 items completed</div>
+            <div class="compliance-bar-wrap"><div class="compliance-bar-fill" style="width:28%"></div></div>
+            <div class="checklist-item"><span class="ci-icon ci-done">✓</span>Site address verified</div>
+            <div class="checklist-item"><span class="ci-icon ci-done">✓</span>Owner consent checked</div>
+            <div class="checklist-item"><span class="ci-icon ci-partial">~</span>S4.15 assessment started</div>
+            <div class="checklist-item"><span class="ci-icon ci-todo">○</span>Heritage assessment complete</div>
+            <div class="checklist-item"><span class="ci-icon ci-todo">○</span>Referrals resolved</div>
+          </div>
+          <div class="panel-footer">
+            <button class="view-all-link" onclick="showToast('View all checklist items')">View checklist →</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Row 3: Documents | Assessment | Conditions -->
+      <div class="mc-row mc-row-3">
+
+        <!-- Documents -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Documents <span class="panel-count">9</span></span>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('View all documents')">View all</button>
+          </div>
+          <div class="panel-body">
+            <div class="doc-item"><div class="doc-icon pdf">PDF</div><div class="doc-name">Statement of Environmental Effects</div></div>
+            <div class="doc-item"><div class="doc-icon dwg">DWG</div><div class="doc-name">Structural Design Drawings</div></div>
+            <div class="doc-item"><div class="doc-icon pdf">PDF</div><div class="doc-name">Waste Management Plan Example</div></div>
+            <div class="doc-item"><div class="doc-icon pdf">PDF</div><div class="doc-name">Generic Arboricultural Impact Assessment</div></div>
+            <div class="doc-item"><div class="doc-icon pdf">PDF</div><div class="doc-name">Heritage Impact Statement</div></div>
+            <div class="doc-item" style="padding-top:4px">
+              <div class="doc-icon pdf" style="background:#fff4e5;color:#8a5d00">PDF</div>
+              <div>
+                <div class="doc-name">TfNSW Agency Decision — Approve with Conditions</div>
+                <div style="font-size:10px;color:#1a6fa0;margin-top:2px">External Referral · A-00892 · Received 4 Jun 2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assessment -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Assessment</span>
+          </div>
+          <div class="panel-body">
+            <div class="assess-row"><span class="assess-key">Status</span><span class="assess-val"><span class="badge badge-amber">Under review</span></span></div>
+            <div class="assess-row"><span class="assess-key">Recommendation</span><span class="assess-val"><span class="badge badge-green">Approval</span></span></div>
+            <div class="assess-row"><span class="assess-key">Assessing officer</span><span class="assess-val"><span class="reviewer-pill"><span class="reviewer-avatar">SR</span>Sean Richards</span></span></div>
+            <div class="assess-row"><span class="assess-key">Reviewer</span><span class="assess-val"><span class="reviewer-pill"><span class="reviewer-avatar">SR</span>Sean Richards</span></span></div>
+            <div class="assess-row"><span class="assess-key">Consent duration</span><span class="assess-val">5 years</span></div>
+            <div class="assess-row"><span class="assess-key">Sent for review</span><span class="assess-val">26 May 2026</span></div>
+          </div>
+          <div class="panel-footer">
+            <button class="view-all-link" onclick="showToast('View full assessment')">View assessment →</button>
+          </div>
+        </div>
+
+        <!-- Conditions -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Conditions <span class="panel-count">12</span></span>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('View all conditions')">View all</button>
+          </div>
+          <div class="panel-body" style="text-align:center;padding:20px 16px">
+            <div class="conditions-count">12</div>
+            <div class="conditions-sub">conditions attached</div>
+            <div style="margin-top:10px;display:flex;gap:8px;justify-content:center">
+              <span class="badge badge-neutral">8 Standard</span>
+              <span class="badge badge-amber">3 Agency</span>
+              <span class="badge badge-red">1 Unresolved</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: RFI Letters | CIR Attributes -->
+      <div class="mc-row mc-row-3">
+
+        <!-- RFI Letters -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">RFI Letters <span class="panel-count">1</span></span>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Add RFI issue')">+ Add issue</button>
+          </div>
+          <div class="panel-body">
+            <div class="rfi-row"><span style="font-size:11px;color:var(--ink-med)">Round</span><span style="font-size:11px;color:var(--ink-med)">Sent by</span><span style="font-size:11px;color:var(--ink-med)">Issues</span><span style="font-size:11px;color:var(--ink-med)">Status</span></div>
+            <div class="rfi-row">
+              <span style="font-size:12px;font-weight:600">Round 1</span>
+              <span style="font-size:11px;color:var(--ink-light)">—</span>
+              <span style="font-size:11px">1</span>
+              <span class="badge badge-amber">Draft</span>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button class="view-all-link" onclick="showToast('View all RFI letters')">View RFI letters →</button>
+          </div>
+        </div>
+
+        <!-- CIR Attributes (new 1 Jul 2026) -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">CIR Attributes <span class="panel-count green">New · 1 Jul 2026</span></span>
+          </div>
+          <div class="panel-body">
+            <div class="cir-row">
+              <span class="cir-key">CIR Required</span>
+              <span class="cir-val"><span class="badge badge-green">Yes</span></span>
+            </div>
+            <div class="cir-row">
+              <span class="cir-key">CIR Clauses</span>
+              <span class="cir-val">
+                <span class="cir-clause-tag">Infrastructure SEPP cl.45</span>
+                <span class="cir-clause-tag">Infrastructure SEPP cl.101</span>
+                <span class="cir-clause-tag">Heritage Act 1977 s.57</span>
+              </span>
+            </div>
+            <div class="cir-row">
+              <span class="cir-key">CIR Approval Required</span>
+              <span class="cir-val"><span class="badge badge-amber">Yes — DCA approval required prior to determination</span></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page -->
+  </div><!-- /screen-mc -->
+
+  <!-- ═══════════════════════════════════════════════
+       SCREEN 2: EXTERNAL REFERRALS DETAIL
+  ═══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-er">
+    <div class="page">
+
+      <button class="back-link" onclick="goTo('mc')">← Back to DA949778</button>
+
+      <div class="er-header">
+        <div>
+          <div class="er-title">
+            External Referrals
+            <span class="panel-count amber">4 active</span>
+            <span class="panel-count red">1 blocking</span>
+          </div>
+          <div class="er-subtitle">DA949778 · 254 Samuel Street, Surry Hills NSW 2010 · 43 days</div>
+        </div>
+        <div class="er-actions">
+          <button class="btn btn-secondary btn-sm" onclick="goToAdmin()" title="Referral settings">
+            <svg style="width:13px;height:13px;fill:var(--ink-light)" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            Settings
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="openNewReferral()">+ New Referral</button>
+        </div>
+      </div>
+
+      <!-- DCA Alert -->
+      <div class="dca-alert" style="margin-bottom:16px">
+        <span class="dca-alert-icon">⚠️</span>
+        <div>
+          <div class="dca-alert-title">DCA referral check in progress — determination is blocked (DPE_E100)</div>
+          <div class="dca-alert-desc">The Development Coordination Authority is conducting an integrated assessment. Accept, Return, and Reject actions on this DA will return error code <span class="dca-alert-code">DPE_E100</span> until the DCA check is resolved. Case reference: <strong>CNR-2026/0147</strong>. No action required from council — monitor for DCA response.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+        <button class="btn btn-secondary btn-sm" onclick="showToast('Refreshing referral data from Planning Portal…')">↻ Refresh</button>
+        <span style="font-size:11px;color:var(--ink-faint);margin-left:8px;align-self:center">Last synced: 2 min ago</span>
+      </div>
+
+      <!-- Referrals table -->
+      <div class="er-table-wrap">
+        <table class="er-table" id="er-table">
+          <thead>
+            <tr>
+              <th>Agency</th>
+              <th>Referral Type</th>
+              <th>Clause</th>
+              <th>Via</th>
+              <th>Case Ref</th>
+              <th>Date Sent</th>
+              <th>Age</th>
+              <th>Status</th>
+              <th>Outcome</th>
+              <th style="width:60px"></th>
+            </tr>
+          </thead>
+          <tbody id="er-tbody">
+            <!-- Row 1: DCA – Integrated – Portal – Blocking -->
+            <tr data-type="portal" data-blocking="true">
+              <td>
+                <div class="er-agency-name">Development Coordination Authority</div>
+                <div class="er-clause" style="color:var(--warning-text)">⚠ DCA check blocking determination</div>
+              </td>
+              <td><span class="ref-type integrated">Integrated</span></td>
+              <td><span style="font-size:11px;color:var(--ink-light)">Infrastructure SEPP 2007 cl.45</span></td>
+              <td><span class="via-chip portal">● Portal</span></td>
+              <td><span class="er-case-ref">CNR-2026/0147</span></td>
+              <td style="font-size:11px">25 May 2026</td>
+              <td><span style="font-size:12px;font-weight:600;color:var(--warning-text)">24d</span></td>
+              <td><span class="status-chip dca"><span class="dot"></span>DCA Check In Progress</span></td>
+              <td><span class="outcome-val blank">Awaiting DCA</span></td>
+              <td>
+                <div class="action-group">
+                  <button class="note-btn" title="Referred as part of DCA integrated assessment. CNRCaseId: CNR-2026/0147. No council action required until DCA check resolves." onclick="showToast('Note: DCA integrated assessment — CNR-2026/0147')">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                  </button>
+                  <button class="three-dot-btn" onclick="toggleOverflowMenu(this,'portal','Development Coordination Authority')" title="More options">···</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 2: TfNSW – Referral – Portal – Response Received -->
+            <tr data-type="portal" data-blocking="false">
+              <td>
+                <div class="er-agency-name">Transport for NSW</div>
+                <div class="er-doc-link" onclick="showToast('Opening TfNSW agency decision document')">📄 TfNSW_AgencyDecision_A00892.pdf</div>
+              </td>
+              <td><span class="ref-type referral">Referral</span></td>
+              <td><span style="font-size:11px;color:var(--ink-light)">Infrastructure SEPP 2007 cl.101</span></td>
+              <td><span class="via-chip portal">● Portal</span></td>
+              <td><span class="er-case-ref">A-00892</span></td>
+              <td style="font-size:11px">25 May 2026</td>
+              <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">24d</span></td>
+              <td><span class="status-chip received"><span class="dot"></span>Response Received</span></td>
+              <td><span class="outcome-val approve-cond">Approve (with conditions)</span></td>
+              <td>
+                <div class="action-group">
+                  <button class="note-btn" title="Response received 4 Jun 2026. TfNSW approval with 3 conditions attached — review conditions before drafting consent." onclick="showToast('Note: TfNSW — 3 conditions to review')">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                  </button>
+                  <button class="three-dot-btn" onclick="toggleOverflowMenu(this,'portal','Transport for NSW')" title="More options">···</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 3: Heritage – Concurrence – Portal – Pending -->
+            <tr data-type="portal" data-blocking="false">
+              <td>
+                <div class="er-agency-name">NSW Heritage Office</div>
+                <div class="er-clause">Reservoir St & Fosterville: Local Heritage Item</div>
+              </td>
+              <td><span class="ref-type concurrence">Concurrence</span></td>
+              <td><span style="font-size:11px;color:var(--ink-light)">Heritage Act 1977 s.57</span></td>
+              <td><span class="via-chip portal">● Portal</span></td>
+              <td><span class="er-case-ref">A-00891</span></td>
+              <td style="font-size:11px">30 May 2026</td>
+              <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">19d</span></td>
+              <td><span class="status-chip pending"><span class="dot"></span>Pending</span></td>
+              <td><span class="outcome-val blank">—</span></td>
+              <td>
+                <div class="action-group">
+                  <button class="note-btn" title="Heritage concurrence required for local heritage item. Applicant submitted Heritage Impact Statement 14 May 2026. Awaiting Heritage Office assessment." onclick="showToast('Note: Heritage concurrence — HIS submitted 14 May')">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                  </button>
+                  <button class="three-dot-btn" onclick="toggleOverflowMenu(this,'portal','NSW Heritage Office')" title="More options">···</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Row 4: Police – Referral – Manual – In Progress -->
+            <tr data-type="manual" data-blocking="false">
+              <td>
+                <div class="er-agency-name">NSW Police Force</div>
+                <div class="er-clause">Surry Hills LAC — CPTED assessment request</div>
+              </td>
+              <td><span class="ref-type referral">Referral</span></td>
+              <td><span style="font-size:11px;color:var(--ink-light)">Off-portal — manual referral</span></td>
+              <td><span class="via-chip manual">Manual</span></td>
+              <td><span class="er-case-ref" style="color:var(--ink-faint)">—</span></td>
+              <td style="font-size:11px">6 Jun 2026</td>
+              <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">12d</span></td>
+              <td>
+                <span class="status-chip dca status-edit-btn" id="police-status-chip" onclick="toggleStatusDropdown('police', this)">
+                  <span class="dot"></span>In Progress
+                </span>
+              </td>
+              <td id="police-outcome"><span class="outcome-val blank">—</span></td>
+              <td>
+                <div class="action-group">
+                  <button class="note-btn" title="Referral emailed to Sgt. M. Clarke, Surry Hills LAC 6 Jun 2026. Phone follow-up made 12 Jun 2026 — confirmed receipt, assessment underway." onclick="showToast('Note: NSW Police — follow-up made 12 Jun')">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                  </button>
+                  <button class="three-dot-btn" onclick="toggleOverflowMenu(this,'manual','NSW Police Force')" title="More options">···</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /page -->
+  </div><!-- /screen-er -->
+
+  <!-- ═══════════════════════════════════════════════
+       SCREEN 3: ADMIN / SETTINGS
+  ═══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-admin">
+    <div class="page">
+
+      <button class="back-link" onclick="goToExtRefs()">← Back to External Referrals</button>
+
+      <div class="er-header" style="margin-bottom:20px">
+        <div>
+          <div class="er-title">External Referrals Settings</div>
+          <div class="er-subtitle">Configure response durations and agency list for DA949778 and your council</div>
+        </div>
+      </div>
+
+      <!-- Section 1: Response Duration -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div>
+            <div class="admin-section-title">Response Duration Settings</div>
+            <div class="admin-section-sub">Set expected response windows for portal-mediated and manual referrals. Referrals exceeding these thresholds will be flagged as overdue.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Duration settings saved')">Save Changes</button>
+        </div>
+        <div class="admin-body">
+          <div class="duration-row">
+            <div class="duration-label-col">
+              <div class="duration-label">Portal referral — standard response period</div>
+              <div class="duration-desc">Applies to all referrals submitted via the NSW Planning Portal (CNR cases). Overdue flag triggers when no response received within this window.</div>
+            </div>
+            <div class="duration-ctrl">
+              <input class="duration-input" type="number" value="28" min="1" max="180" />
+              <span class="duration-unit">days</span>
+            </div>
+          </div>
+          <div class="duration-row">
+            <div class="duration-label-col">
+              <div class="duration-label">Manual referral — standard response period</div>
+              <div class="duration-desc">Applies to off-portal referrals (NSW Police, NSW Maritime, etc.). Set expected response window from date sent.</div>
+            </div>
+            <div class="duration-ctrl">
+              <input class="duration-input" type="number" value="21" min="1" max="180" />
+              <span class="duration-unit">days</span>
+            </div>
+          </div>
+          <div class="duration-row">
+            <div class="duration-label-col">
+              <div class="duration-label">Warning threshold</div>
+              <div class="duration-desc">Show an amber warning indicator this many days before the overdue date, to allow time for follow-up.</div>
+            </div>
+            <div class="duration-ctrl">
+              <input class="duration-input" type="number" value="5" min="1" max="30" />
+              <span class="duration-unit">days before overdue</span>
+            </div>
+          </div>
+          <div class="duration-row">
+            <div class="duration-label-col">
+              <div class="duration-label">DCA check — expected duration</div>
+              <div class="duration-desc">Used for display purposes only. DCA check completion is determined by the Planning Portal (DPE_E100 lifted). Build displays elapsed days against this reference.</div>
+            </div>
+            <div class="duration-ctrl">
+              <input class="duration-input" type="number" value="28" min="1" max="90" />
+              <span class="duration-unit">days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Agency List -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div>
+            <div class="admin-section-title">Agency List</div>
+            <div class="admin-section-sub">Configurable list of agencies available when creating a new manual referral. Portal-mediated agencies are managed by the NSW Planning Portal and are not configurable here.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openAddAgency()">+ Add Agency</button>
+        </div>
+        <table class="agency-table" id="agency-table">
+          <thead>
+            <tr>
+              <th>Agency Name</th>
+              <th>Default Referral Type</th>
+              <th>Contact Name</th>
+              <th>Contact Email</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="agency-name-col">NSW Police Force</td>
+              <td><span class="ref-type referral">Referral</span></td>
+              <td style="font-size:11px">Surry Hills LAC Planning Unit</td>
+              <td style="font-size:11px;color:var(--ink-light)">planning@police.nsw.gov.au</td>
+              <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" checked onchange="toggleAgencyStatus(this,'NSW Police Force')"><span class="toggle-slider"></span></label></td>
+              <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('NSW Police Force')">Edit</button></div></td>
+            </tr>
+            <tr>
+              <td class="agency-name-col">NSW Maritime</td>
+              <td><span class="ref-type referral">Referral</span></td>
+              <td style="font-size:11px">Maritime Planning Referrals</td>
+              <td style="font-size:11px;color:var(--ink-light)">maritimePlanning@transport.nsw.gov.au</td>
+              <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" checked onchange="toggleAgencyStatus(this,'NSW Maritime')"><span class="toggle-slider"></span></label></td>
+              <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('NSW Maritime')">Edit</button></div></td>
+            </tr>
+            <tr>
+              <td class="agency-name-col">Sydney Water Corporation</td>
+              <td><span class="ref-type integrated">Integrated</span></td>
+              <td style="font-size:11px">Development Applications Team</td>
+              <td style="font-size:11px;color:var(--ink-light)">DevelopmentPlanning@sydneywater.com.au</td>
+              <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" checked onchange="toggleAgencyStatus(this,'Sydney Water Corporation')"><span class="toggle-slider"></span></label></td>
+              <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('Sydney Water')">Edit</button></div></td>
+            </tr>
+            <tr>
+              <td class="agency-name-col">Fire &amp; Rescue NSW</td>
+              <td><span class="ref-type referral">Referral</span></td>
+              <td style="font-size:11px">Building Regulation Unit</td>
+              <td style="font-size:11px;color:var(--ink-light)">buildingregulation@fire.nsw.gov.au</td>
+              <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" checked onchange="toggleAgencyStatus(this,'Fire &amp; Rescue NSW')"><span class="toggle-slider"></span></label></td>
+              <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('Fire &amp; Rescue NSW')">Edit</button></div></td>
+            </tr>
+            <tr>
+              <td class="agency-name-col">Ausgrid</td>
+              <td><span class="ref-type notification">Notification</span></td>
+              <td style="font-size:11px">Network Planning</td>
+              <td style="font-size:11px;color:var(--ink-light)">network.planning@ausgrid.com.au</td>
+              <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" onchange="toggleAgencyStatus(this,'Ausgrid')"><span class="toggle-slider"></span></label></td>
+              <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('Ausgrid')">Edit</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+    </div><!-- /page -->
+  </div><!-- /screen-admin -->
+
+</div><!-- /main-area -->
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: NEW REFERRAL
+═══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-new-ref">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">New Manual Referral</span>
+      <button class="modal-close" onclick="closeModal('modal-new-ref')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Agency</label>
+        <select class="form-select">
+          <option value="">— Select agency —</option>
+          <option>NSW Police Force</option>
+          <option>NSW Maritime</option>
+          <option>Sydney Water Corporation</option>
+          <option>Fire &amp; Rescue NSW</option>
+          <option>Ausgrid</option>
+        </select>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Referral Type</label>
+          <select class="form-select">
+            <option>Referral</option>
+            <option>Concurrence</option>
+            <option>Integrated Development</option>
+            <option>Notification / Information</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date Sent</label>
+          <input class="form-input" type="date" value="2026-06-18" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Clause / Trigger</label>
+        <input class="form-input" type="text" placeholder="e.g. SEPP (Infrastructure) 2007 cl.101" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expected Response Date</label>
+        <input class="form-input" type="date" value="2026-07-09" />
+        <div class="form-hint">Based on default 21-day response window. Adjust as required.</div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" placeholder="Any notes about this referral — method of submission, contact made, special instructions…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-new-ref')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewReferral()">Create Referral</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: UPDATE STATUS (manual referral)
+═══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-update-status">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <span class="modal-title">Update Referral Status</span>
+      <button class="modal-close" onclick="closeModal('modal-update-status')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:14px;padding:10px 14px;background:var(--neutral-bg);border-radius:8px">
+        <div style="font-size:11px;color:var(--ink-light)">Agency</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink);margin-top:2px">NSW Police Force</div>
+        <div style="font-size:11px;color:var(--ink-light);margin-top:1px">Manual referral · Sent 6 Jun 2026 · 12 days</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">New Status</label>
+        <select class="form-select">
+          <option>Awaiting Response</option>
+          <option>Response Received</option>
+          <option>Response Reviewed</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Outcome (if response received)</label>
+        <select class="form-select">
+          <option value="">— Not yet determined —</option>
+          <option>Approve</option>
+          <option>Approve (with conditions)</option>
+          <option>Refuse</option>
+          <option>Advice</option>
+          <option>Decision not required</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" placeholder="e.g. Received email response from Sgt. Clarke, Surry Hills LAC on 18 Jun 2026…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-update-status')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStatus()">Save Status</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: ADD / EDIT AGENCY
+═══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-agency">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-agency-title">Add Agency</span>
+      <button class="modal-close" onclick="closeModal('modal-agency')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Agency Name</label>
+        <input class="form-input" type="text" id="agency-name-input" placeholder="e.g. Sydney Water Corporation" />
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Default Referral Type</label>
+          <select class="form-select">
+            <option>Referral</option>
+            <option>Concurrence</option>
+            <option>Integrated Development</option>
+            <option>Notification / Information</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select">
+            <option>Active</option>
+            <option>Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Default Contact Name</label>
+          <input class="form-input" type="text" placeholder="Contact person or team name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Default Contact Phone</label>
+          <input class="form-input" type="tel" placeholder="+61 2 XXXX XXXX" />
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Default Contact Email</label>
+        <input class="form-input" type="email" placeholder="agency-referrals@example.nsw.gov.au" />
+        <div class="form-hint">These defaults pre-fill the New Referral form. They can be overridden per referral.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-agency')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAgency()">Save Agency</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shared Overflow Menu (portal pattern) -->
+<div id="row-overflow-menu" class="overflow-menu hidden">
+  <div class="overflow-menu-item danger" id="overflow-cancel-item" onclick="handleOverflowCancel()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    Cancel referral
+  </div>
+  <div class="overflow-menu-divider" id="overflow-divider"></div>
+  <div class="overflow-menu-item" onclick="handleAddCommentary()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Add commentary
+  </div>
+</div>
+
+<!-- Modal: Add Commentary -->
+<div class="modal-overlay" id="modal-commentary">
+  <div class="modal" style="max-width:560px;width:92%">
+    <div class="modal-header">
+      <span class="modal-title">Add Commentary</span>
+      <button class="modal-close" onclick="closeModal('modal-commentary')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:12px;font-size:11px;color:var(--ink-light)">
+        Agency: <strong id="commentary-agency-name" style="color:var(--ink-med)"></strong>
+      </div>
+      <div class="rte-wrap">
+        <div class="rte-toolbar">
+          <button class="rte-btn" onclick="rteCmd('bold')" title="Bold"><b>B</b></button>
+          <button class="rte-btn" onclick="rteCmd('italic')" title="Italic"><i style="font-style:italic">I</i></button>
+          <button class="rte-btn" onclick="rteCmd('underline')" title="Underline"><u>U</u></button>
+          <div class="rte-sep"></div>
+          <button class="rte-btn" onclick="rteCmd('insertUnorderedList')" title="Bullet list" style="font-size:14px">•≡</button>
+          <button class="rte-btn" onclick="rteCmd('insertOrderedList')" title="Numbered list" style="font-size:11px">1≡</button>
+          <div class="rte-sep"></div>
+          <button class="rte-btn" onclick="rteCmd('removeFormat')" title="Clear formatting" style="font-size:11px">Tx</button>
+        </div>
+        <div class="rte-editor" id="commentary-editor" contenteditable="true" data-ph="Add your assessment commentary here…"></div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-secondary" onclick="openConditionLibrary()" style="font-size:12px">
+          + Add from Condition Library
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-commentary')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCommentary()">Save Commentary</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Condition Library -->
+<div class="modal-overlay" id="modal-conditions">
+  <div class="modal" style="max-width:600px;width:92%">
+    <div class="modal-header">
+      <span class="modal-title">Condition Library</span>
+      <button class="modal-close" onclick="closeModal('modal-conditions')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:12px;font-size:12px;color:var(--ink-light)">Select conditions to insert into your commentary.</div>
+      <input class="cond-search" type="text" placeholder="Search conditions…" oninput="filterConditions(this.value)">
+      <div class="condition-list" id="condition-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-conditions')">Back</button>
+      <button class="btn btn-primary" onclick="addSelectedConditions()">Add Selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shared Status Dropdown (portal pattern — renders above overflow:hidden containers) -->
+<div id="shared-status-dropdown" class="status-dropdown hidden">
+  <div class="status-dropdown-item" data-class="pending" data-label="Not started"><span class="sd-dot" style="background:var(--ink-faint)"></span>Not started</div>
+  <div class="status-dropdown-item" data-class="dca" data-label="In Progress"><span class="sd-dot" style="background:var(--warning)"></span>In Progress</div>
+  <div class="status-dropdown-item" data-class="received" data-label="Responded"><span class="sd-dot" style="background:var(--positive)"></span>Responded</div>
+  <div class="status-dropdown-item" data-class="reviewed" data-label="Complete"><span class="sd-dot" style="background:#7c4dbd"></span>Complete</div>
+</div>
+
+<!-- Proto Tag -->
+<div class="proto-tag">Build AU · External Referrals v1.3 · Concept only — does not conform to Objective Design Language · Commercial in confidence</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── NAVIGATION ─────────────────────────────
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+  window.scrollTo(0, 0);
+  updateBreadcrumb(screen);
+}
+
+function goToExtRefs() {
+  goTo('er');
+}
+function goToAdmin() {
+  goTo('admin');
+}
+
+function updateBreadcrumb(screen) {
+  const bc = document.getElementById('breadcrumb');
+  const crumbs = {
+    mc: `<span class="bc-link" onclick="goTo('mc')">Applications</span>
+         <span class="bc-sep">/</span>
+         <span class="bc-current">DA949778</span>`,
+    er: `<span class="bc-link" onclick="goTo('mc')">Applications</span>
+         <span class="bc-sep">/</span>
+         <span class="bc-link" onclick="goTo('mc')">DA949778</span>
+         <span class="bc-sep">/</span>
+         <span class="bc-current">External Referrals</span>`,
+    admin: `<span class="bc-link" onclick="goTo('mc')">Applications</span>
+            <span class="bc-sep">/</span>
+            <span class="bc-link" onclick="goTo('mc')">DA949778</span>
+            <span class="bc-sep">/</span>
+            <span class="bc-link" onclick="goToExtRefs()">External Referrals</span>
+            <span class="bc-sep">/</span>
+            <span class="bc-current">Settings</span>`
+  };
+  bc.innerHTML = crumbs[screen] || crumbs.mc;
+}
+
+// ── FILTER ─────────────────────────────────
+function filterRefs(type, btn) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.filter-count').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  btn.querySelector('.filter-count').classList.add('active');
+
+  const rows = document.querySelectorAll('#er-tbody tr');
+  rows.forEach(row => {
+    if (type === 'all') {
+      row.style.display = '';
+    } else if (type === 'portal') {
+      row.style.display = row.dataset.type === 'portal' ? '' : 'none';
+    } else if (type === 'manual') {
+      row.style.display = row.dataset.type === 'manual' ? '' : 'none';
+    } else if (type === 'blocking') {
+      row.style.display = row.dataset.blocking === 'true' ? '' : 'none';
+    }
+  });
+}
+
+// ── MODALS ─────────────────────────────────
+function openNewReferral() {
+  document.getElementById('modal-new-ref').classList.add('open');
+}
+function openUpdateStatus() {
+  document.getElementById('modal-update-status').classList.add('open');
+}
+function openAddAgency() {
+  document.getElementById('modal-agency-title').textContent = 'Add Agency';
+  document.getElementById('agency-name-input').value = '';
+  document.getElementById('modal-agency').classList.add('open');
+}
+function openEditAgency(name) {
+  document.getElementById('modal-agency-title').textContent = 'Edit Agency — ' + name;
+  document.getElementById('agency-name-input').value = name;
+  document.getElementById('modal-agency').classList.add('open');
+}
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// ── SAVE ACTIONS ───────────────────────────
+function saveNewReferral() {
+  closeModal('modal-new-ref');
+  showToast('Manual referral created and saved against DA949778');
+}
+function saveStatus() {
+  closeModal('modal-update-status');
+  showToast('Referral status updated — NSW Police Force');
+}
+function toggleAgencyStatus(cb, name) {
+  showToast(name + (cb.checked ? ' activated' : ' deactivated'));
+}
+function saveAgency() {
+  closeModal('modal-agency');
+  showToast('Agency list updated');
+}
+
+// ── OVERFLOW MENU ──────────────────────────
+let _omBtn = null, _omHandler = null;
+
+function toggleOverflowMenu(btn, type, agencyName) {
+  const menu = document.getElementById('row-overflow-menu');
+  if (_omBtn === btn && !menu.classList.contains('hidden')) {
+    menu.classList.add('hidden'); _omBtn = null; return;
+  }
+  _omBtn = btn;
+  // Show/hide Cancel for manual rows only
+  const isManual = type === 'manual';
+  document.getElementById('overflow-cancel-item').style.display = isManual ? 'flex' : 'none';
+  document.getElementById('overflow-divider').style.display = isManual ? 'block' : 'none';
+  // Store agency name for commentary modal
+  menu.dataset.agency = agencyName || '';
+  // Position
+  const rect = btn.getBoundingClientRect();
+  menu.style.top = (rect.bottom + 5) + 'px';
+  menu.style.left = 'auto';
+  menu.style.right = (window.innerWidth - rect.right) + 'px';
+  menu.classList.remove('hidden');
+  if (_omHandler) document.removeEventListener('click', _omHandler);
+  _omHandler = (e) => {
+    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.classList.add('hidden'); _omBtn = null;
+      document.removeEventListener('click', _omHandler);
+    }
+  };
+  setTimeout(() => document.addEventListener('click', _omHandler), 10);
+}
+
+function handleOverflowCancel() {
+  document.getElementById('row-overflow-menu').classList.add('hidden');
+  _omBtn = null;
+  showToast('Referral cancelled');
+}
+
+function handleAddCommentary() {
+  const agency = document.getElementById('row-overflow-menu').dataset.agency || '';
+  document.getElementById('row-overflow-menu').classList.add('hidden');
+  _omBtn = null;
+  document.getElementById('commentary-agency-name').textContent = agency;
+  document.getElementById('commentary-editor').innerHTML = '';
+  openModal('modal-commentary');
+}
+
+function rteCmd(cmd) {
+  document.getElementById('commentary-editor').focus();
+  document.execCommand(cmd, false, null);
+}
+
+function saveCommentary() {
+  closeModal('modal-commentary');
+  showToast('Commentary saved');
+}
+
+// ── CONDITION LIBRARY ──────────────────────
+const CONDITIONS = [
+  { id:'c1', tag:'Traffic',   text:'A Construction Traffic Management Plan (CTMP) must be submitted to and approved by Council prior to the issue of any Construction Certificate.' },
+  { id:'c2', tag:'Hours',     text:'All construction work must be carried out between 7:00am and 5:00pm Monday to Friday, and 8:00am to 1:00pm Saturday. No work is permitted on Sundays or public holidays.' },
+  { id:'c3', tag:'Drainage',  text:'Stormwater drainage from the site must be connected to Council\'s stormwater system. Details must be submitted with the Construction Certificate application.' },
+  { id:'c4', tag:'Landscaping', text:'All landscaping shown on the approved plans must be completed prior to the issue of any Occupation Certificate.' },
+  { id:'c5', tag:'Heritage',  text:'Work must be carried out in accordance with the approved Heritage Impact Statement and Conservation Management Plan prepared by a suitably qualified heritage consultant.' },
+  { id:'c6', tag:'CPTED',     text:'The development must incorporate Crime Prevention Through Environmental Design (CPTED) principles. A CPTED report must be submitted to and endorsed by NSW Police prior to the issue of any Construction Certificate.' },
+  { id:'c7', tag:'Noise',     text:'All mechanical plant and equipment must be designed and installed so that noise levels at the nearest affected premises do not exceed the criteria in the NSW Industrial Noise Policy.' },
+  { id:'c8', tag:'Waste',     text:'A Waste Management Plan must be submitted to and approved by Council prior to the issue of any Construction Certificate, in accordance with Council\'s Waste Management Policy.' },
+  { id:'c9', tag:'Setback',   text:'The development must maintain a minimum setback of 6 metres from the primary street frontage in accordance with the applicable development standard under the LEP.' },
+  { id:'c10', tag:'Materials', text:'External materials, colours and finishes must be consistent with those documented in the approved plans and Schedule of Materials. No variations are permitted without prior written approval from Council.' },
+];
+
+function renderConditions(filter) {
+  const list = document.getElementById('condition-list');
+  const filtered = filter ? CONDITIONS.filter(c =>
+    c.text.toLowerCase().includes(filter.toLowerCase()) || c.tag.toLowerCase().includes(filter.toLowerCase())
+  ) : CONDITIONS;
+  list.innerHTML = filtered.length ? filtered.map(c => `
+    <label class="condition-item">
+      <input type="checkbox" id="cond-${c.id}" value="${c.id}">
+      <div class="condition-item-body">
+        <span class="condition-tag">${c.tag}</span><br>${c.text}
+      </div>
+    </label>
+  `).join('') : '<div style="padding:12px 0;font-size:12px;color:var(--ink-light)">No matching conditions.</div>';
+}
+
+function filterConditions(val) { renderConditions(val); }
+
+function openConditionLibrary() {
+  renderConditions('');
+  openModal('modal-conditions');
+}
+
+function addSelectedConditions() {
+  const checked = [...document.querySelectorAll('#condition-list input[type="checkbox"]:checked')];
+  if (!checked.length) { closeModal('modal-conditions'); return; }
+  const selected = checked.map(cb => CONDITIONS.find(c => c.id === cb.value)).filter(Boolean);
+  const editor = document.getElementById('commentary-editor');
+  editor.focus();
+  const html = '<ul>' + selected.map(c => `<li>${c.text}</li>`).join('') + '</ul>';
+  document.execCommand('insertHTML', false, html);
+  closeModal('modal-conditions');
+  showToast(selected.length + ' condition' + (selected.length > 1 ? 's' : '') + ' added');
+}
+
+// ── MANUAL STATUS EDIT ─────────────────────
+let _activeStatusId = null;
+let _ddCloseHandler = null;
+
+function toggleStatusDropdown(id, chipEl) {
+  const dd = document.getElementById('shared-status-dropdown');
+  // toggle off if already open for same chip
+  if (_activeStatusId === id && !dd.classList.contains('hidden')) {
+    dd.classList.add('hidden');
+    _activeStatusId = null;
+    return;
+  }
+  // position relative to chip using fixed coords (escapes overflow:hidden)
+  const rect = chipEl.getBoundingClientRect();
+  dd.style.top  = (rect.bottom + 5) + 'px';
+  dd.style.left = rect.left + 'px';
+  _activeStatusId = id;
+  // wire item clicks for this target
+  dd.querySelectorAll('.status-dropdown-item').forEach(item => {
+    item.onclick = (e) => {
+      e.stopPropagation();
+      setManualStatus(id, item.dataset.class, item.dataset.label);
+    };
+  });
+  dd.classList.remove('hidden');
+  // close on outside click
+  if (_ddCloseHandler) document.removeEventListener('click', _ddCloseHandler);
+  _ddCloseHandler = function(e) {
+    if (!dd.contains(e.target) && !chipEl.contains(e.target)) {
+      dd.classList.add('hidden');
+      _activeStatusId = null;
+      document.removeEventListener('click', _ddCloseHandler);
+    }
+  };
+  setTimeout(() => document.addEventListener('click', _ddCloseHandler), 10);
+}
+
+function setManualStatus(id, chipClass, label) {
+  const chip = document.getElementById(id + '-status-chip');
+  chip.className = 'status-chip status-edit-btn ' + chipClass;
+  chip.innerHTML = '<span class="dot"></span>' + label;
+  document.getElementById(id + '-status-dropdown').classList.add('hidden');
+  showToast('Status updated to: ' + label);
+  if (chipClass === 'received') {
+    document.getElementById(id + '-outcome').innerHTML =
+      `<select class="outcome-select" onchange="setOutcome('${id}',this)">
+        <option value="">Record outcome…</option>
+        <option>Approve</option>
+        <option>Approve (with conditions)</option>
+        <option>Refuse</option>
+        <option>Advice</option>
+        <option>Decision not required</option>
+      </select>`;
+  }
+}
+
+function setOutcome(id, sel) {
+  const val = sel.value;
+  if (!val) return;
+  const classMap = {
+    'Approve': 'approve', 'Approve (with conditions)': 'approve-cond',
+    'Refuse': 'refuse', 'Advice': 'advice', 'Decision not required': 'blank'
+  };
+  const cls = classMap[val] || 'blank';
+  document.getElementById(id + '-outcome').innerHTML =
+    `<span class="outcome-val ${cls}">${val}</span>`;
+  showToast('Outcome recorded: ' + val);
+}
+
+// ── PASSWORD GATE ──────────────────────────
+function checkPw() {
+  const val = document.getElementById('pw-input').value;
+  const err = document.getElementById('pw-error');
+  const inp = document.getElementById('pw-input');
+  if (val === 'objective2026') {
+    document.getElementById('pw-gate').classList.add('hidden');
+    err.textContent = '';
+  } else {
+    inp.classList.add('error');
+    err.textContent = 'Incorrect access code. Please try again.';
+    inp.value = '';
+    setTimeout(() => inp.classList.remove('error'), 1500);
+  }
+}
+
+// ── TOAST ──────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+</script>
+
+<script src="https://build-au-feedback-widget.vercel.app/feedback-widget.js"></script>
+</body>
+</html>
