@@ -154,6 +154,21 @@ body {
 .view-all-link:hover { color: #1a4a1a; }
 
 /* ── BADGES & CHIPS ───────────────────────────────── */
+/* ── API FIELD TOOLTIP ── */
+#api-tooltip {
+  position: fixed; z-index: 9999; pointer-events: none;
+  background: #1d1d1f; color: #e5e5ea;
+  font-family: 'SF Mono','Menlo','Monaco',monospace; font-size: 10px; letter-spacing: 0.3px;
+  padding: 4px 9px 4px 7px; border-radius: 5px; white-space: nowrap;
+  border-left: 2px solid #2d6a2d;
+  opacity: 0; transition: opacity 0.12s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+#api-tooltip.visible { opacity: 1; }
+#api-tooltip .api-label { font-size: 9px; color: #86868b; display: block; margin-bottom: 1px; }
+tr[data-type="portal"] td { cursor: help; }
+tr[data-type="manual"] td { cursor: default; }
+
 .badge { font-size: 10px; padding: 3px 8px; border-radius: 5px; font-weight: 600; display: inline-block; white-space: nowrap; }
 .badge-green { background: var(--positive-bg); color: var(--positive-text); }
 .badge-amber { background: var(--warning-bg); color: var(--warning-text); }
@@ -795,7 +810,7 @@ body {
                   <td><div class="ext-mini-agency">Transport for NSW</div></td>
                   <td><span class="via-chip portal">● Portal</span></td>
                   <td class="ext-mini-age">24 days</td>
-                  <td><span class="status-chip received"><span class="dot"></span>Response Received</span></td>
+                  <td><span class="status-chip received"><span class="dot"></span>Responded</span></td>
                 </tr>
                 <tr>
                   <td><div class="ext-mini-agency">NSW Heritage Office</div></td>
@@ -859,7 +874,7 @@ body {
               <div class="doc-icon pdf" style="background:#fff4e5;color:#8a5d00">PDF</div>
               <div>
                 <div class="doc-name">TfNSW Agency Decision — Approve with Conditions</div>
-                <div style="font-size:10px;color:#1a6fa0;margin-top:2px">External Referral · A-00892 · Received 4 Jun 2026</div>
+                <div style="font-size:10px;color:#1a6fa0;margin-top:2px">External Referral · A-2026/0892 · Received 4 Jun 2026</div>
               </div>
             </div>
           </div>
@@ -1038,15 +1053,15 @@ body {
             <tr data-type="portal" data-blocking="false">
               <td>
                 <div class="er-agency-name">Transport for NSW</div>
-                <div class="er-doc-link" onclick="showToast('Opening TfNSW agency decision document')">📄 TfNSW_AgencyDecision_A00892.pdf</div>
+                <div class="er-doc-link" onclick="showToast('Opening TfNSW agency decision document')">📄 TfNSW_AgencyDecision_A20260892.pdf</div>
               </td>
               <td><span class="ref-type referral">Referral</span></td>
               <td><span style="font-size:11px;color:var(--ink-light)">Infrastructure SEPP 2007 cl.101</span></td>
               <td><span class="via-chip portal">● Portal</span></td>
-              <td><span class="er-case-ref">A-00892</span></td>
+              <td><span class="er-case-ref">A-2026/0892</span></td>
               <td style="font-size:11px">25 May 2026</td>
               <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">24d</span></td>
-              <td><span class="status-chip received"><span class="dot"></span>Response Received</span></td>
+              <td><span class="status-chip received"><span class="dot"></span>Responded</span></td>
               <td><span class="outcome-val approve-cond">Approve (with conditions)</span></td>
               <td>
                 <div class="action-group">
@@ -1066,7 +1081,7 @@ body {
               <td><span class="ref-type concurrence">Concurrence</span></td>
               <td><span style="font-size:11px;color:var(--ink-light)">Heritage Act 1977 s.57</span></td>
               <td><span class="via-chip portal">● Portal</span></td>
-              <td><span class="er-case-ref">A-00891</span></td>
+              <td><span class="er-case-ref">A-2026/0891</span></td>
               <td style="font-size:11px">30 May 2026</td>
               <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">19d</span></td>
               <td><span class="status-chip pending"><span class="dot"></span>Pending</span></td>
@@ -1329,7 +1344,7 @@ body {
         <label class="form-label">New Status</label>
         <select class="form-select">
           <option>Awaiting Response</option>
-          <option>Response Received</option>
+          <option>Responded</option>
           <option>Response Reviewed</option>
         </select>
       </div>
@@ -1410,6 +1425,9 @@ body {
     </div>
   </div>
 </div>
+
+<!-- API Field Tooltip -->
+<div id="api-tooltip"><span class="api-label">Planning Portal API field</span><span id="api-tip-text"></span></div>
 
 <!-- Shared Overflow Menu (portal pattern) -->
 <div id="row-overflow-menu" class="overflow-menu hidden">
@@ -1600,6 +1618,52 @@ function saveAgency() {
   closeModal('modal-agency');
   showToast('Agency list updated');
 }
+
+// ── API FIELD TOOLTIPS ─────────────────────
+// Column index → CNR API variable name (ePlanning to Agency API v1.0)
+const API_COL_MAP = [
+  'agencyAndClause.agencyName',                                // 0  Agency
+  'clauseList.clauseType',                                     // 1  Referral Type
+  'clauseList.clauseName',                                     // 2  Clause
+  'Derived — agencyCaseID prefix: A-YYYY/xxxx=portal, CNR-YYYY/xxxx=DCA', // 3  Via
+  'agencyAndClause.agencyCaseID',                              // 4  Case Ref
+  'CreateCNR.dateSubmittedToAgency',                           // 5  Date Sent
+  'Calculated from CreateCNR.dateSubmittedToAgency',           // 6  Age
+  'agencyAndClause.agencyCaseStatus',                          // 7  Status
+  'RelayAgencyDecision.agencyResponse → DecisionOutcome',      // 8  Outcome
+];
+
+const _apiTip = document.getElementById('api-tooltip');
+const _apiTipText = document.getElementById('api-tip-text');
+let _apiTipHide;
+
+function showApiTooltip(el, text) {
+  clearTimeout(_apiTipHide);
+  _apiTipText.textContent = text;
+  const r = el.getBoundingClientRect();
+  const tipH = 32;
+  const top = r.top > tipH + 10 ? r.top - tipH - 4 : r.bottom + 4;
+  _apiTip.style.top = top + 'px';
+  _apiTip.style.left = Math.min(r.left, window.innerWidth - 380) + 'px';
+  _apiTip.classList.add('visible');
+}
+function hideApiTooltip() {
+  _apiTipHide = setTimeout(() => _apiTip.classList.remove('visible'), 80);
+}
+
+function initApiTooltips() {
+  document.querySelectorAll('#er-tbody tr[data-type="portal"]').forEach(row => {
+    const isDCA = row.querySelector('.er-clause')?.textContent.includes('DCA');
+    row.querySelectorAll('td').forEach((td, i) => {
+      if (i >= API_COL_MAP.length) return;
+      // DCA case ref comes from PreAssessment.CNRCaseID not agencyCaseID
+      const label = (i === 4 && isDCA) ? 'PreAssessment.CNRCaseID' : API_COL_MAP[i];
+      td.addEventListener('mouseenter', () => showApiTooltip(td, label));
+      td.addEventListener('mouseleave', hideApiTooltip);
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded', initApiTooltips);
 
 // ── OVERFLOW MENU ──────────────────────────
 let _omBtn = null, _omHandler = null;
