@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>External Referrals — Build AU Prototype v1.3</title>
+<title>External Referrals — Build AU Prototype v1.4</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -1014,12 +1014,14 @@ tr[data-type="manual"] td { cursor: default; }
           <thead>
             <tr>
               <th>Agency</th>
+              <th>Referred</th>
+              <th>Age</th>
               <th>Referral Type</th>
               <th>Clause</th>
               <th>Via</th>
               <th>Case Ref</th>
-              <th>Date Sent</th>
-              <th>Age</th>
+              <th>Due Date</th>
+              <th>Response Date</th>
               <th>Status</th>
               <th>Outcome</th>
               <th style="width:60px"></th>
@@ -1031,12 +1033,14 @@ tr[data-type="manual"] td { cursor: default; }
               <td>
                 <div class="er-agency-name">Development Coordination Authority</div>
               </td>
+              <td style="font-size:11px">25 May 2026</td>
+              <td><span style="font-size:12px;font-weight:600;color:var(--warning-text)">24d</span></td>
               <td><span class="ref-type integrated">Integrated</span></td>
               <td><span style="font-size:11px;color:var(--ink-light)">Infrastructure SEPP 2007 cl.45</span></td>
               <td><span class="via-chip portal">● Portal</span></td>
               <td><span class="er-case-ref">CNR-2026/0147</span></td>
-              <td style="font-size:11px">25 May 2026</td>
-              <td><span style="font-size:12px;font-weight:600;color:var(--warning-text)">24d</span></td>
+              <td style="font-size:11px;font-weight:600;color:var(--warning-text)">22 Jun 2026</td>
+              <td style="font-size:11px;color:var(--ink-faint)">—</td>
               <td><span class="status-chip dca"><span class="dot"></span>DCA Check In Progress</span></td>
               <td><span class="outcome-val blank">Awaiting DCA</span></td>
               <td>
@@ -1053,12 +1057,14 @@ tr[data-type="manual"] td { cursor: default; }
               <td>
                 <div class="er-agency-name">Transport for NSW</div>
               </td>
+              <td style="font-size:11px">25 May 2026</td>
+              <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">24d</span></td>
               <td><span class="ref-type referral">Referral</span></td>
               <td><span style="font-size:11px;color:var(--ink-light)">Infrastructure SEPP 2007 cl.101</span></td>
               <td><span class="via-chip portal">● Portal</span></td>
               <td><span class="er-case-ref">A-2026/0892</span></td>
-              <td style="font-size:11px">25 May 2026</td>
-              <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">24d</span></td>
+              <td style="font-size:11px;color:var(--ink-light)">22 Jun 2026</td>
+              <td style="font-size:11px;color:var(--ink-med)">4 Jun 2026</td>
               <td><span class="status-chip received"><span class="dot"></span>Responded</span></td>
               <td><span class="outcome-val approve-cond">Approve (with conditions)</span></td>
               <td>
@@ -1075,12 +1081,14 @@ tr[data-type="manual"] td { cursor: default; }
               <td>
                 <div class="er-agency-name">NSW Heritage Office</div>
               </td>
+              <td style="font-size:11px">30 May 2026</td>
+              <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">19d</span></td>
               <td><span class="ref-type concurrence">Concurrence</span></td>
               <td><span style="font-size:11px;color:var(--ink-light)">Heritage Act 1977 s.57</span></td>
               <td><span class="via-chip portal">● Portal</span></td>
               <td><span class="er-case-ref">A-2026/0891</span></td>
-              <td style="font-size:11px">30 May 2026</td>
-              <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">19d</span></td>
+              <td style="font-size:11px;color:var(--ink-light)">27 Jun 2026</td>
+              <td style="font-size:11px;color:var(--ink-faint)">—</td>
               <td><span class="status-chip pending"><span class="dot"></span>Not started</span></td>
               <td><span class="outcome-val blank">—</span></td>
               <td>
@@ -1097,12 +1105,14 @@ tr[data-type="manual"] td { cursor: default; }
               <td>
                 <div class="er-agency-name">NSW Police Force</div>
               </td>
+              <td style="font-size:11px">6 Jun 2026</td>
+              <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">12d</span></td>
               <td><span class="ref-type referral">Referral</span></td>
               <td><span style="font-size:11px;color:var(--ink-light)">Off-portal — manual referral</span></td>
               <td><span class="via-chip manual">Manual</span></td>
               <td><span class="er-case-ref" style="color:var(--ink-faint)">—</span></td>
-              <td style="font-size:11px">6 Jun 2026</td>
-              <td><span style="font-size:12px;font-weight:600;color:var(--ink-med)">12d</span></td>
+              <td style="font-size:11px;color:var(--ink-light)">27 Jun 2026</td>
+              <td id="police-response-date" style="font-size:11px;color:var(--ink-faint)">—</td>
               <td>
                 <span class="status-chip dca status-edit-btn" id="police-status-chip" onclick="toggleStatusDropdown('police', this)">
                   <span class="dot"></span>In Progress
@@ -1503,7 +1513,7 @@ tr[data-type="manual"] td { cursor: default; }
 </div>
 
 <!-- Proto Tag -->
-<div class="proto-tag">Build AU · External Referrals v1.3 · Concept only — does not conform to Objective Design Language · Commercial in confidence</div>
+<div class="proto-tag">Build AU · External Referrals v1.4 · Concept only — does not conform to Objective Design Language · Commercial in confidence</div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
@@ -1618,15 +1628,17 @@ function saveAgency() {
 // ── API FIELD TOOLTIPS ─────────────────────
 // Column index → CNR API variable name (ePlanning to Agency API v1.0)
 const API_COL_MAP = [
-  'agencyAndClause.agencyName',                                // 0  Agency
-  'clauseList.clauseType',                                     // 1  Referral Type
-  'clauseList.clauseName',                                     // 2  Clause
-  'Derived — agencyCaseID prefix: A-YYYY/xxxx=portal, CNR-YYYY/xxxx=DCA', // 3  Via
-  'agencyAndClause.agencyCaseID',                              // 4  Case Ref
-  'CreateCNR.dateSubmittedToAgency',                           // 5  Date Sent
-  'Calculated from CreateCNR.dateSubmittedToAgency',           // 6  Age
-  'agencyAndClause.agencyCaseStatus',                          // 7  Status
-  'RelayAgencyDecision.agencyResponse → DecisionOutcome',      // 8  Outcome
+  'agencyAndClause.agencyName',                                              // 0  Agency
+  'CreateCNR.dateSubmittedToAgency',                                         // 1  Referred
+  'Calculated from CreateCNR.dateSubmittedToAgency',                         // 2  Age
+  'clauseList.clauseType',                                                   // 3  Referral Type
+  'clauseList.clauseName',                                                   // 4  Clause
+  'Derived — agencyCaseID prefix: A-YYYY/xxxx=portal, CNR-YYYY/xxxx=DCA',   // 5  Via
+  'agencyAndClause.agencyCaseID',                                            // 6  Case Ref
+  'Calculated: dateSubmittedToAgency + responseWindow (portal: 28d / manual: 21d)', // 7  Due Date
+  'RelayAgencyDecision.responseDate',                                        // 8  Response Date
+  'agencyAndClause.agencyCaseStatus',                                        // 9  Status
+  'RelayAgencyDecision.agencyResponse → DecisionOutcome',                    // 10 Outcome
 ];
 
 const _apiTip = document.getElementById('api-tooltip');
@@ -1653,7 +1665,7 @@ function initApiTooltips() {
     row.querySelectorAll('td').forEach((td, i) => {
       if (i >= API_COL_MAP.length) return;
       // DCA case ref comes from PreAssessment.CNRCaseID not agencyCaseID
-      const label = (i === 4 && isDCA) ? 'PreAssessment.CNRCaseID' : API_COL_MAP[i];
+      const label = (i === 6 && isDCA) ? 'PreAssessment.CNRCaseID' : API_COL_MAP[i];
       td.addEventListener('mouseenter', () => showApiTooltip(td, label));
       td.addEventListener('mouseleave', hideApiTooltip);
     });
@@ -1806,9 +1818,19 @@ function setManualStatus(id, chipClass, label) {
   const chip = document.getElementById(id + '-status-chip');
   chip.className = 'status-chip status-edit-btn ' + chipClass;
   chip.innerHTML = '<span class="dot"></span>' + label;
-  document.getElementById(id + '-status-dropdown').classList.add('hidden');
+  document.getElementById('shared-status-dropdown').classList.add('hidden');
+  _activeStatusId = null;
   showToast('Status updated to: ' + label);
   if (chipClass === 'received') {
+    // Auto-populate response date with today
+    const now = new Date();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const dateStr = now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+    const respDateEl = document.getElementById(id + '-response-date');
+    if (respDateEl) {
+      respDateEl.textContent = dateStr;
+      respDateEl.style.color = 'var(--ink-med)';
+    }
     document.getElementById(id + '-outcome').innerHTML =
       `<select class="outcome-select" onchange="setOutcome('${id}',this)">
         <option value="">Record outcome…</option>
