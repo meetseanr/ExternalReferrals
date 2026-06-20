@@ -1146,64 +1146,11 @@ tr[data-type="manual"] td { cursor: default; }
       <div class="er-header" style="margin-bottom:20px">
         <div>
           <div class="er-title">External Referrals Settings</div>
-          <div class="er-subtitle">Configure response durations and agency list for DA949778 and your council</div>
+          <div class="er-subtitle">Configure per-agency response durations and the list of manual referral agencies for your council</div>
         </div>
       </div>
 
-      <!-- Section 1: Response Duration -->
-      <div class="admin-section">
-        <div class="admin-section-header">
-          <div>
-            <div class="admin-section-title">Response Duration Settings</div>
-            <div class="admin-section-sub">Set expected response windows for portal-mediated and manual referrals. Referrals exceeding these thresholds will be flagged as overdue.</div>
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="showToast('Duration settings saved')">Save Changes</button>
-        </div>
-        <div class="admin-body">
-          <div class="duration-row">
-            <div class="duration-label-col">
-              <div class="duration-label">Portal referral — standard response period</div>
-              <div class="duration-desc">Applies to all referrals submitted via the NSW Planning Portal (CNR cases). Overdue flag triggers when no response received within this window.</div>
-            </div>
-            <div class="duration-ctrl">
-              <input class="duration-input" type="number" value="28" min="1" max="180" />
-              <span class="duration-unit">days</span>
-            </div>
-          </div>
-          <div class="duration-row">
-            <div class="duration-label-col">
-              <div class="duration-label">Manual referral — standard response period</div>
-              <div class="duration-desc">Applies to off-portal referrals (NSW Police, NSW Maritime, etc.). Set expected response window from date sent.</div>
-            </div>
-            <div class="duration-ctrl">
-              <input class="duration-input" type="number" value="21" min="1" max="180" />
-              <span class="duration-unit">days</span>
-            </div>
-          </div>
-          <div class="duration-row">
-            <div class="duration-label-col">
-              <div class="duration-label">Warning threshold</div>
-              <div class="duration-desc">Show an amber warning indicator this many days before the overdue date, to allow time for follow-up.</div>
-            </div>
-            <div class="duration-ctrl">
-              <input class="duration-input" type="number" value="5" min="1" max="30" />
-              <span class="duration-unit">days before overdue</span>
-            </div>
-          </div>
-          <div class="duration-row">
-            <div class="duration-label-col">
-              <div class="duration-label">DCA check — expected duration</div>
-              <div class="duration-desc">Used for display purposes only. DCA check completion is determined by the Planning Portal (DPE_E100 lifted). Build displays elapsed days against this reference.</div>
-            </div>
-            <div class="duration-ctrl">
-              <input class="duration-input" type="number" value="28" min="1" max="90" />
-              <span class="duration-unit">days</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 2: Agency List -->
+      <!-- Agency List -->
       <div class="admin-section">
         <div class="admin-section-header">
           <div>
@@ -1217,8 +1164,7 @@ tr[data-type="manual"] td { cursor: default; }
             <tr>
               <th>Agency Name</th>
               <th>Default Referral Type</th>
-              <th>Contact Name</th>
-              <th>Contact Email</th>
+              <th>Response Duration</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -1227,40 +1173,35 @@ tr[data-type="manual"] td { cursor: default; }
             <tr>
               <td class="agency-name-col">NSW Police Force</td>
               <td><span class="ref-type referral">Referral</span></td>
-              <td style="font-size:11px">Surry Hills LAC Planning Unit</td>
-              <td style="font-size:11px;color:var(--ink-light)">planning@police.nsw.gov.au</td>
+              <td style="font-size:12px;color:var(--ink-med)">21 days</td>
               <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" checked onchange="toggleAgencyStatus(this,'NSW Police Force')"><span class="toggle-slider"></span></label></td>
               <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('NSW Police Force')">Edit</button></div></td>
             </tr>
             <tr>
               <td class="agency-name-col">NSW Maritime</td>
               <td><span class="ref-type referral">Referral</span></td>
-              <td style="font-size:11px">Maritime Planning Referrals</td>
-              <td style="font-size:11px;color:var(--ink-light)">maritimePlanning@transport.nsw.gov.au</td>
+              <td style="font-size:12px;color:var(--ink-med)">28 days</td>
               <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" checked onchange="toggleAgencyStatus(this,'NSW Maritime')"><span class="toggle-slider"></span></label></td>
               <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('NSW Maritime')">Edit</button></div></td>
             </tr>
             <tr>
               <td class="agency-name-col">Sydney Water Corporation</td>
               <td><span class="ref-type integrated">Integrated</span></td>
-              <td style="font-size:11px">Development Applications Team</td>
-              <td style="font-size:11px;color:var(--ink-light)">DevelopmentPlanning@sydneywater.com.au</td>
+              <td style="font-size:12px;color:var(--ink-med)">28 days</td>
               <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" checked onchange="toggleAgencyStatus(this,'Sydney Water Corporation')"><span class="toggle-slider"></span></label></td>
               <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('Sydney Water')">Edit</button></div></td>
             </tr>
             <tr>
               <td class="agency-name-col">Fire &amp; Rescue NSW</td>
               <td><span class="ref-type referral">Referral</span></td>
-              <td style="font-size:11px">Building Regulation Unit</td>
-              <td style="font-size:11px;color:var(--ink-light)">buildingregulation@fire.nsw.gov.au</td>
+              <td style="font-size:12px;color:var(--ink-med)">14 days</td>
               <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" checked onchange="toggleAgencyStatus(this,'Fire &amp; Rescue NSW')"><span class="toggle-slider"></span></label></td>
               <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('Fire &amp; Rescue NSW')">Edit</button></div></td>
             </tr>
             <tr>
               <td class="agency-name-col">Ausgrid</td>
               <td><span class="ref-type notification">Notification</span></td>
-              <td style="font-size:11px">Network Planning</td>
-              <td style="font-size:11px;color:var(--ink-light)">network.planning@ausgrid.com.au</td>
+              <td style="font-size:12px;color:var(--ink-med)">14 days</td>
               <td><label class="toggle-switch" title="Toggle active/inactive"><input type="checkbox" onchange="toggleAgencyStatus(this,'Ausgrid')"><span class="toggle-slider"></span></label></td>
               <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick="openEditAgency('Ausgrid')">Edit</button></div></td>
             </tr>
@@ -1408,6 +1349,14 @@ tr[data-type="manual"] td { cursor: default; }
             <option>Inactive</option>
           </select>
         </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Response Duration</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input class="form-input" type="number" value="21" min="1" max="180" style="width:90px;text-align:center;font-weight:600" />
+          <span style="font-size:13px;color:var(--ink-light)">days</span>
+        </div>
+        <div class="form-hint">Expected response window from the date the referral is sent. Used to calculate the Due Date and flag overdue referrals.</div>
       </div>
       <div class="form-grid-2">
         <div class="form-group">
