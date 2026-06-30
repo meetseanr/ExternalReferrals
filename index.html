@@ -59,7 +59,7 @@ body {
 .sidebar-divider { width: 28px; height: 1px; background: var(--border); margin: 8px 0; }
 
 /* ── MAIN AREA ────────────────────────────────────── */
-.main-area { flex: 1; margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; }
+.main-area { flex: 1; margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
 /* ── TOPBAR ───────────────────────────────────────── */
 .topbar {
@@ -500,49 +500,70 @@ tr[data-type="manual"] td { cursor: default; }
 /* ── PASSWORD GATE ── */
 #pw-gate {
   position: fixed; inset: 0; z-index: 9999;
-  background: #f5f5f7;
-  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
   font-family: 'Inter', -apple-system, sans-serif;
 }
 #pw-gate.hidden { display: none; }
 .pw-card {
-  background: #fff; border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
-  padding: 40px 44px; width: 360px; text-align: center;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-light);
+  padding: 44px 48px 40px; width: 380px; text-align: center;
 }
-.pw-logo {
-  font-size: 13px; font-weight: 600; color: #2d6a2d; letter-spacing: 0.3px;
-  margin-bottom: 6px;
+.pw-mark {
+  width: 40px; height: 40px; border-radius: 10px; background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
 }
-.pw-logo span { font-weight: 300; color: #86868b; margin-left: 4px; }
+.pw-mark svg { width: 22px; height: 22px; fill: #fff; }
+.pw-brand {
+  font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.2px;
+  margin-bottom: 2px;
+}
+.pw-brand span { font-weight: 300; color: var(--ink-light); margin-left: 5px; font-size: 13px; }
+.pw-divider { width: 32px; height: 1px; background: var(--border); margin: 16px auto; }
 .pw-heading {
-  font-size: 18px; font-weight: 600; color: #1d1d1f; margin-bottom: 6px;
+  font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 6px; letter-spacing: -0.3px;
 }
 .pw-sub {
-  font-size: 12px; color: #86868b; margin-bottom: 24px; line-height: 1.5;
+  font-size: 12px; color: var(--ink-light); margin-bottom: 28px; line-height: 1.6;
 }
 .pw-input {
-  width: 100%; padding: 10px 14px; border: 1.5px solid #e5e5ea;
-  border-radius: 8px; font-size: 14px; font-family: inherit;
-  outline: none; transition: border-color 0.15s; margin-bottom: 12px;
-  color: #1d1d1f;
+  width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 14px; font-family: inherit;
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s; margin-bottom: 12px;
+  color: var(--ink); background: var(--card); box-sizing: border-box;
 }
-.pw-input:focus { border-color: #2d6a2d; }
-.pw-input.error { border-color: #ff3b30; }
+.pw-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(45,106,45,0.10); }
+.pw-input.error { border-color: var(--negative); }
 .pw-btn {
-  width: 100%; padding: 11px; background: #2d6a2d; color: #fff;
-  border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
-  font-family: inherit; cursor: pointer; transition: background 0.15s;
+  width: 100%; padding: 11px; background: var(--green); color: #fff;
+  border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+  font-family: inherit; cursor: pointer; transition: background 0.15s; letter-spacing: -0.1px;
 }
 .pw-btn:hover { background: #245824; }
 .pw-error {
-  font-size: 11px; color: #ff3b30; margin-top: 8px; min-height: 16px;
+  font-size: 11px; color: var(--negative); margin-top: 8px; min-height: 16px;
+}
+.pw-footer {
+  margin-top: 24px; font-size: 10px; color: var(--ink-faint); line-height: 1.5;
 }
 
 .proto-tag {
   position: fixed; bottom: 14px; right: 14px; font-size: 10px; color: var(--ink-faint);
   background: var(--card); padding: 4px 10px; border-radius: 6px;
   border: 1px solid var(--border); box-shadow: var(--shadow-sm); z-index: 100;
+}
+
+/* ── SCREEN NUMBER BADGE ─────────────────────────── */
+.screen-num-badge {
+  position: fixed; top: 60px; left: 64px; z-index: 45;
+  font-size: 11px; font-weight: 700; color: var(--ink-faint);
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 3px 9px; pointer-events: none;
+  box-shadow: var(--shadow-sm); line-height: 1.4;
 }
 
 /* ── TOAST ────────────────────────────────────────── */
@@ -556,6 +577,117 @@ tr[data-type="manual"] td { cursor: default; }
 
 /* ── SECTION LABEL ────────────────────────────────── */
 .section-label { font-size: 11px; font-weight: 600; color: var(--ink-light); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px; margin-top: 2px; }
+
+/* ── DETAIL SIDE PANEL ───────────────────────────── */
+.er-content-split { display: flex; align-items: flex-start; }
+.er-table-col { flex: 1; min-width: 0; padding: 22px 24px 80px 28px; overflow-x: auto; }
+.er-detail-panel {
+  width: 300px; flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--card);
+  position: sticky; top: 52px;
+  height: calc(100vh - 52px); overflow-y: auto;
+  display: none;
+}
+.er-content-split.panel-open .er-detail-panel { display: block; }
+#er-tbody tr.row-selected td { background: var(--green-light) !important; }
+.dp-header {
+  padding: 11px 14px; border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; background: var(--card); z-index: 10;
+}
+.dp-title { font-size: 12px; font-weight: 600; color: var(--ink); }
+.dp-icon-btn {
+  width: 24px; height: 24px; border-radius: 5px; display: flex; align-items: center;
+  justify-content: center; background: none; border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.15s; font-size: 11px; color: var(--ink-faint);
+}
+.dp-icon-btn:hover { background: var(--neutral-bg); color: var(--ink-med); }
+.dp-section { border-bottom: 1px solid var(--border-light); }
+.dp-section-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; cursor: pointer; user-select: none; transition: background 0.1s;
+}
+.dp-section-hdr:hover { background: var(--neutral-bg); }
+.dp-section-ttl { font-size: 11px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 7px; }
+.dp-section-body { padding: 8px 14px 12px; }
+.dp-section-body.collapsed { display: none; }
+.dp-chevron { font-size: 10px; color: var(--ink-faint); transition: transform 0.2s; }
+.dp-chevron.open { transform: rotate(180deg); }
+
+/* ── COMMENT THREAD ──────────────────────────────── */
+.comment-item { display: flex; gap: 8px; margin-bottom: 10px; }
+.comment-av {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; color: white;
+}
+.comment-av.sr { background: linear-gradient(135deg, #b8c1ec, #a5b4fc); }
+.comment-meta { font-size: 10px; color: var(--ink-light); margin-bottom: 2px; }
+.comment-meta strong { color: var(--ink-med); font-weight: 600; }
+.comment-text { font-size: 11px; color: var(--ink-med); line-height: 1.5; }
+.comment-add-row { margin-top: 8px; }
+.comment-add-input {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px;
+  font-size: 11px; font-family: 'Inter', sans-serif; resize: none; outline: none;
+  min-height: 50px; color: var(--ink); background: var(--bg); transition: border-color 0.15s;
+}
+.comment-add-input:focus { border-color: var(--green); background: white; }
+.comment-post-row { display: flex; justify-content: flex-end; margin-top: 5px; }
+
+/* ── REVIEW SCREEN ───────────────────────────────── */
+.review-layout { display: flex; align-items: flex-start; }
+.review-main { flex: 1; min-width: 0; padding: 22px 24px 80px 28px; }
+.review-side {
+  width: 300px; flex-shrink: 0;
+  border-left: 1px solid var(--border); background: var(--card);
+  position: sticky; top: 52px;
+  height: calc(100vh - 52px); overflow-y: auto;
+}
+
+/* Outcome / Decision chips */
+.outcome-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.outcome-chip-btn {
+  padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid var(--border); background: var(--card);
+  color: var(--ink-med); transition: all 0.15s; font-family: 'Inter', sans-serif;
+}
+.outcome-chip-btn:hover { border-color: var(--ink-light); background: var(--neutral-bg); }
+.outcome-chip-btn.sel-supported { background: var(--positive-bg); color: var(--positive-text); border-color: #b8e8c4; }
+.outcome-chip-btn.sel-not-supported { background: var(--negative-bg); color: var(--negative-text); border-color: #ffc9c6; }
+.outcome-chip-btn.sel-conditions { background: var(--warning-bg); color: var(--warning-text); border-color: #fcd99b; }
+
+/* Referral detail metadata */
+.ref-meta-row { display: flex; padding: 5px 0; border-bottom: 1px solid var(--border-light); font-size: 11px; }
+.ref-meta-row:last-child { border-bottom: none; }
+.ref-meta-key { color: var(--ink-light); width: 90px; flex-shrink: 0; }
+.ref-meta-val { color: var(--ink-med); font-weight: 500; }
+
+/* ── APPLIED CONDITIONS LIST ─────────────────────── */
+.applied-condition-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 11px; margin-bottom: 6px;
+  background: var(--neutral-bg); border-radius: 7px;
+  border: 1px solid var(--border-light); font-size: 11px; color: var(--ink-med); line-height: 1.5;
+}
+.applied-condition-item:last-child { margin-bottom: 0; }
+.applied-condition-item-text { flex: 1; }
+.applied-condition-item-tag { font-size: 10px; font-weight: 600; color: var(--ink-light); background: var(--card); padding: 1px 6px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
+.applied-condition-item-actions { display: flex; gap: 4px; flex-shrink: 0; padding-top: 1px; }
+
+/* ── PLANNING RESOURCES ──────────────────────────── */
+.pr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.pr-card {
+  background: var(--card); border-radius: var(--radius);
+  border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);
+  padding: 28px 20px 22px; cursor: pointer; transition: all 0.15s; position: relative;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.pr-card:hover { box-shadow: var(--shadow-md); border-color: var(--border); transform: translateY(-1px); }
+.pr-card-arrow { position: absolute; top: 14px; right: 14px; font-size: 13px; color: var(--ink-faint); }
+.pr-card-icon { margin-bottom: 12px; width: 54px; height: 54px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.pr-card-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.pr-card-desc { font-size: 11px; color: var(--ink-light); line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -563,12 +695,17 @@ tr[data-type="manual"] td { cursor: default; }
 <!-- Password Gate -->
 <div id="pw-gate">
   <div class="pw-card">
-    <div class="pw-logo">Build AU <span>by Objective</span></div>
-    <div class="pw-heading">External Referrals Prototype</div>
-    <div class="pw-sub">This is a concept demonstration. Enter the access code to continue.</div>
+    <div class="pw-mark">
+      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    </div>
+    <div class="pw-brand">Build AU <span>by Objective</span></div>
+    <div class="pw-divider"></div>
+    <div class="pw-heading">External Referrals</div>
+    <div class="pw-sub">Concept demonstration — enter the access code to continue.</div>
     <input type="password" id="pw-input" class="pw-input" placeholder="Access code" onkeydown="if(event.key==='Enter')checkPw()">
     <button class="pw-btn" onclick="checkPw()">Continue</button>
     <div class="pw-error" id="pw-error"></div>
+    <div class="pw-footer">This is a concept only and does not represent a final product.</div>
   </div>
 </div>
 
@@ -972,7 +1109,10 @@ tr[data-type="manual"] td { cursor: default; }
        SCREEN 2: EXTERNAL REFERRALS DETAIL
   ═══════════════════════════════════════════════ -->
   <div class="screen" id="screen-er">
-    <div class="page">
+    <div class="er-content-split">
+
+    <!-- LEFT: Referrals table column -->
+    <div class="er-table-col">
 
       <button class="back-link" onclick="goTo('mc')">← Back to DA949778</button>
 
@@ -986,9 +1126,9 @@ tr[data-type="manual"] td { cursor: default; }
           <div class="er-subtitle">DA949778 · 254 Samuel Street, Surry Hills NSW 2010 · 43 days</div>
         </div>
         <div class="er-actions">
-          <button class="btn btn-secondary btn-sm" onclick="goToAdmin()" title="Referral settings">
+          <button class="btn btn-secondary btn-sm" onclick="goToPlanningResources()" title="Planning resources">
             <svg style="width:13px;height:13px;fill:var(--ink-light)" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-            Settings
+            Resources
           </button>
           <button class="btn btn-primary btn-sm" onclick="openNewReferral()">+ New Referral</button>
         </div>
@@ -1029,7 +1169,7 @@ tr[data-type="manual"] td { cursor: default; }
           </thead>
           <tbody id="er-tbody">
             <!-- Row 1: DCA – Integrated – Portal – Blocking -->
-            <tr data-type="portal" data-blocking="true">
+            <tr data-type="portal" data-blocking="true" onclick="selectReferralRow(this,0)" style="cursor:pointer">
               <td>
                 <div class="er-agency-name">Development Coordination Authority</div>
               </td>
@@ -1043,17 +1183,14 @@ tr[data-type="manual"] td { cursor: default; }
               <td style="font-size:11px;color:var(--ink-faint)">—</td>
               <td><span class="status-chip dca"><span class="dot"></span>DCA Check In Progress</span></td>
               <td><span class="outcome-val blank">Awaiting DCA</span></td>
-              <td>
+              <td onclick="event.stopPropagation()">
                 <div class="action-group">
-                  <button class="note-btn" title="Referred as part of DCA integrated assessment. CNRCaseId: CNR-2026/0147. No council action required until DCA check resolves." onclick="showToast('Note: DCA integrated assessment — CNR-2026/0147')">
-                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-                  </button>
                   <button class="three-dot-btn" onclick="toggleOverflowMenu(this,'portal','Development Coordination Authority')" title="More options">···</button>
                 </div>
               </td>
             </tr>
             <!-- Row 2: TfNSW – Referral – Portal – Response Received -->
-            <tr data-type="portal" data-blocking="false">
+            <tr data-type="portal" data-blocking="false" onclick="selectReferralRow(this,1)" style="cursor:pointer">
               <td>
                 <div class="er-agency-name">Transport for NSW</div>
               </td>
@@ -1067,17 +1204,14 @@ tr[data-type="manual"] td { cursor: default; }
               <td style="font-size:11px;color:var(--ink-med)">4 Jun 2026</td>
               <td><span class="status-chip received"><span class="dot"></span>Responded</span></td>
               <td><span class="outcome-val approve-cond">Approve (with conditions)</span></td>
-              <td>
+              <td onclick="event.stopPropagation()">
                 <div class="action-group">
-                  <button class="note-btn" title="Response received 4 Jun 2026. TfNSW approval with 3 conditions attached — review conditions before drafting consent." onclick="showToast('Note: TfNSW — 3 conditions to review')">
-                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-                  </button>
                   <button class="three-dot-btn" onclick="toggleOverflowMenu(this,'portal','Transport for NSW')" title="More options">···</button>
                 </div>
               </td>
             </tr>
             <!-- Row 3: Heritage – Concurrence – Portal – Pending -->
-            <tr data-type="portal" data-blocking="false">
+            <tr data-type="portal" data-blocking="false" onclick="selectReferralRow(this,2)" style="cursor:pointer">
               <td>
                 <div class="er-agency-name">NSW Heritage Office</div>
               </td>
@@ -1091,17 +1225,14 @@ tr[data-type="manual"] td { cursor: default; }
               <td style="font-size:11px;color:var(--ink-faint)">—</td>
               <td><span class="status-chip pending"><span class="dot"></span>Not started</span></td>
               <td><span class="outcome-val blank">—</span></td>
-              <td>
+              <td onclick="event.stopPropagation()">
                 <div class="action-group">
-                  <button class="note-btn" title="Heritage concurrence required for local heritage item. Applicant submitted Heritage Impact Statement 14 May 2026. Awaiting Heritage Office assessment." onclick="showToast('Note: Heritage concurrence — HIS submitted 14 May')">
-                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-                  </button>
                   <button class="three-dot-btn" onclick="toggleOverflowMenu(this,'portal','NSW Heritage Office')" title="More options">···</button>
                 </div>
               </td>
             </tr>
             <!-- Row 4: Police – Referral – Manual – In Progress -->
-            <tr data-type="manual" data-blocking="false">
+            <tr data-type="manual" data-blocking="false" onclick="selectReferralRow(this,3)" style="cursor:pointer">
               <td>
                 <div class="er-agency-name">NSW Police Force</div>
               </td>
@@ -1119,11 +1250,8 @@ tr[data-type="manual"] td { cursor: default; }
                 </span>
               </td>
               <td id="police-outcome"><span class="outcome-val blank">—</span></td>
-              <td>
+              <td onclick="event.stopPropagation()">
                 <div class="action-group">
-                  <button class="note-btn" title="Referral emailed to Sgt. M. Clarke, Surry Hills LAC 6 Jun 2026. Phone follow-up made 12 Jun 2026 — confirmed receipt, assessment underway." onclick="showToast('Note: NSW Police — follow-up made 12 Jun')">
-                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-                  </button>
                   <button class="three-dot-btn" onclick="toggleOverflowMenu(this,'manual','NSW Police Force')" title="More options">···</button>
                 </div>
               </td>
@@ -1132,7 +1260,56 @@ tr[data-type="manual"] td { cursor: default; }
         </table>
       </div>
 
-    </div><!-- /page -->
+    </div><!-- /er-table-col -->
+
+    <!-- RIGHT: Referral detail panel -->
+    <div class="er-detail-panel" id="er-side-panel">
+      <div class="dp-header">
+        <span class="dp-title" id="panel-agency-name">Referral detail</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="btn btn-secondary btn-sm" onclick="goToReview()">Review</button>
+          <button class="dp-icon-btn" title="Close" onclick="closeSidePanel()">✕</button>
+        </div>
+      </div>
+
+      <!-- Referral comments (replaces Referral request) -->
+      <div class="dp-section">
+        <div class="dp-section-hdr" onclick="toggleDpSection(this)">
+          <span class="dp-section-ttl">Referral comments <span class="panel-count">1</span></span>
+          <span class="dp-chevron open">▾</span>
+        </div>
+        <div class="dp-section-body">
+          <div id="side-comments">
+            <div class="comment-item">
+              <div class="comment-av sr">SR</div>
+              <div>
+                <div class="comment-meta"><strong>Sean Richards</strong> · 23 Apr 2026</div>
+                <div class="comment-text">This application involves development to a locally listed heritage item and heritage advice is required in accordance with Part C of the DCP. A Statement of Heritage Impact has been submitted by the applicant and is attached for review.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents -->
+      <div class="dp-section">
+        <div class="dp-section-hdr" onclick="toggleDpSection(this)">
+          <span class="dp-section-ttl">Documents <span class="panel-count">11</span></span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button style="background:none;border:none;cursor:pointer;padding:0;font-size:11px;color:var(--ink-faint)" onclick="event.stopPropagation();showToast('View all documents')" title="All">⊞</button>
+            <span class="dp-chevron">▾</span>
+          </div>
+        </div>
+        <div class="dp-section-body collapsed">
+          <div class="doc-item"><div class="doc-icon pdf">PDF</div><div class="doc-name" style="font-size:10px">Statement of Environmental Effects</div></div>
+          <div class="doc-item"><div class="doc-icon dwg">DWG</div><div class="doc-name" style="font-size:10px">Structural Design Drawings</div></div>
+          <div class="doc-item"><div class="doc-icon pdf">PDF</div><div class="doc-name" style="font-size:10px">Heritage Impact Statement</div></div>
+          <div style="margin-top:6px"><button class="view-all-link" onclick="showToast('View all 11 documents')">View all 11 →</button></div>
+        </div>
+      </div>
+
+    </div><!-- /er-detail-panel -->
+    </div><!-- /er-content-split -->
   </div><!-- /screen-er -->
 
   <!-- ═══════════════════════════════════════════════
@@ -1141,12 +1318,12 @@ tr[data-type="manual"] td { cursor: default; }
   <div class="screen" id="screen-admin">
     <div class="page">
 
-      <button class="back-link" onclick="goToExtRefs()">← Back to External Referrals</button>
+      <button class="back-link" onclick="goToPlanningResources()">← Back to Planning resources</button>
 
       <div class="er-header" style="margin-bottom:20px">
         <div>
-          <div class="er-title">External Referrals Settings</div>
-          <div class="er-subtitle">Configure per-agency response durations and the list of manual referral agencies for your council</div>
+          <div class="er-title">Agencies</div>
+          <div class="er-subtitle">Configure the list of manual referral agencies and per-agency response durations for your council</div>
         </div>
       </div>
 
@@ -1212,6 +1389,194 @@ tr[data-type="manual"] td { cursor: default; }
 
     </div><!-- /page -->
   </div><!-- /screen-admin -->
+
+  <!-- ═══════════════════════════════════════════════
+       SCREEN 4: REFERRAL REVIEW
+  ═══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-review">
+    <div class="review-layout">
+
+      <!-- LEFT: Review form -->
+      <div class="review-main">
+        <button class="back-link" onclick="goToExtRefs()">← Back to External Referrals</button>
+
+        <div class="er-header">
+          <div>
+            <div class="er-title">
+              Referral review — NSW Police
+              <span class="status-chip received" id="review-status-chip" style="font-size:10px;font-weight:600;margin-left:6px;vertical-align:middle"><span class="dot"></span>Responded</span>
+            </div>
+            <div class="er-subtitle">DA949778 · NSW Police Force · Off-portal — manual referral · Referral</div>
+          </div>
+          <div class="er-actions">
+            <button class="btn btn-secondary btn-sm" onclick="goToExtRefs()">Cancel</button>
+            <button class="btn btn-secondary btn-sm" onclick="showToast('Draft saved — NSW Police review')">Save draft</button>
+            <button class="btn btn-primary btn-sm" id="review-complete-btn" onclick="completeReview()">Complete</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Response</span>
+          </div>
+          <div class="panel-body">
+
+            <!-- Outcome / Decision -->
+            <div class="form-group">
+              <label class="form-label">Outcome / Decision</label>
+              <div class="outcome-chips" id="outcome-chips">
+                <button class="outcome-chip-btn" onclick="selectOutcomeChip(this,'supported')">Supported</button>
+                <button class="outcome-chip-btn" onclick="selectOutcomeChip(this,'not-supported')">Not supported</button>
+                <button class="outcome-chip-btn" onclick="selectOutcomeChip(this,'conditions')">RES/Design changes</button>
+              </div>
+            </div>
+
+            <!-- Planner commentary -->
+            <div class="form-group" style="margin-top:18px;margin-bottom:0">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+                <label class="form-label" style="margin-bottom:0">Planner commentary</label>
+                <label style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:500;color:var(--ink-med);cursor:pointer">
+                  <input type="checkbox" id="include-in-report" checked style="accent-color:var(--green);width:13px;height:13px;cursor:pointer">
+                  Include in report
+                </label>
+              </div>
+              <div style="text-align:right;font-size:10px;color:var(--ink-faint);margin-bottom:6px">Sean Richards · Updated 30 Jun 2026</div>
+              <div class="rte-wrap">
+                <div class="rte-toolbar">
+                  <button class="rte-btn" onclick="rteReviewCmd('bold')" title="Bold"><b>B</b></button>
+                  <button class="rte-btn" onclick="rteReviewCmd('italic')" title="Italic"><i style="font-style:italic">I</i></button>
+                  <button class="rte-btn" onclick="rteReviewCmd('underline')" title="Underline"><u>U</u></button>
+                  <div class="rte-sep"></div>
+                  <button class="rte-btn" onclick="rteReviewCmd('insertUnorderedList')" title="Bullet list" style="font-size:14px">•≡</button>
+                  <button class="rte-btn" onclick="rteReviewCmd('insertOrderedList')" title="Numbered list" style="font-size:11px">1≡</button>
+                  <div class="rte-sep"></div>
+                  <button class="rte-btn" onclick="rteReviewCmd('strikeThrough')" title="Strikethrough" style="text-decoration:line-through;font-size:11px">S</button>
+                  <button class="rte-btn" onclick="rteReviewCmd('superscript')" title="Superscript" style="font-size:9px">x²</button>
+                  <div class="rte-sep"></div>
+                  <button class="rte-btn" onclick="rteReviewCmd('indent')" title="Indent" style="font-size:11px">⇥</button>
+                  <button class="rte-btn" onclick="rteReviewCmd('outdent')" title="Outdent" style="font-size:11px">⇤</button>
+                  <div class="rte-sep"></div>
+                  <button class="rte-btn" onclick="rteReviewCmd('removeFormat')" title="Clear formatting" style="font-size:11px">Tx</button>
+                  <button class="rte-btn" onclick="showToast('Insert link')" title="Link" style="font-size:12px">🔗</button>
+                </div>
+                <div class="rte-editor" id="review-editor" contenteditable="true" data-ph="Record your assessment and commentary here…" style="min-height:200px"></div>
+              </div>
+              <div style="margin-top:10px">
+                <button class="btn btn-secondary" onclick="openConditionLibrary('review-editor')" style="font-size:12px">Apply conditions</button>
+                <div id="review-conditions-list" style="margin-top:10px"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /review-main -->
+
+      <!-- RIGHT: Referral details panel -->
+      <div class="review-side">
+        <div class="dp-header">
+          <span class="dp-title">Referral details</span>
+        </div>
+
+        <!-- Referral comments (replaces Referral request) -->
+        <div class="dp-section">
+          <div class="dp-section-hdr" onclick="toggleDpSection(this)">
+            <span class="dp-section-ttl">Referral comments <span class="panel-count">1</span></span>
+            <span class="dp-chevron open">▾</span>
+          </div>
+          <div class="dp-section-body">
+            <div id="review-comments">
+              <div class="comment-item">
+                <div class="comment-av sr">SR</div>
+                <div>
+                  <div class="comment-meta"><strong>Sean Richards</strong> · 23 Apr 2026</div>
+                  <div class="comment-text">This application involves development to a locally listed heritage item and heritage advice is required in accordance with Part C of the DCP. A Statement of Heritage Impact has been submitted by the applicant and is attached for review.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="dp-section">
+          <div class="dp-section-hdr" onclick="toggleDpSection(this)">
+            <span class="dp-section-ttl">Documents <span class="panel-count">11</span></span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button style="background:none;border:none;cursor:pointer;padding:0;font-size:11px;color:var(--ink-faint)" onclick="event.stopPropagation();showToast('View all documents')" title="All">⊞</button>
+              <span class="dp-chevron">▾</span>
+            </div>
+          </div>
+          <div class="dp-section-body collapsed">
+            <div class="doc-item"><div class="doc-icon pdf">PDF</div><div class="doc-name" style="font-size:10px">Statement of Environmental Effects</div></div>
+            <div class="doc-item"><div class="doc-icon pdf">PDF</div><div class="doc-name" style="font-size:10px">Heritage Impact Statement</div></div>
+            <div style="margin-top:6px"><button class="view-all-link" onclick="showToast('View all 11 documents')">View all 11 →</button></div>
+          </div>
+        </div>
+
+      </div><!-- /review-side -->
+    </div><!-- /review-layout -->
+  </div><!-- /screen-review -->
+
+  <!-- ═══════════════════════════════════════════════
+       SCREEN: PLANNING RESOURCES
+  ═══════════════════════════════════════════════ -->
+  <div class="screen" id="screen-pr">
+    <div class="page">
+
+      <button class="back-link" onclick="goToExtRefs()">← Back to External Referrals</button>
+
+      <div class="er-header" style="margin-bottom:24px">
+        <div>
+          <div class="er-title">Planning resources</div>
+          <div class="er-subtitle">Access planning tools, templates and agency configuration for your council</div>
+        </div>
+      </div>
+
+      <div class="pr-grid">
+
+        <!-- Regulations -->
+        <div class="pr-card" onclick="showToast('Regulations — coming soon')">
+          <span class="pr-card-arrow">→</span>
+          <div class="pr-card-icon" style="background:#eef5ee">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#2d6a2d"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+          </div>
+          <div class="pr-card-title">Regulations</div>
+          <div class="pr-card-desc">Access and apply relevant planning legislation, policies, and regulations to conduct comprehensive development application assessments.</div>
+        </div>
+
+        <!-- Conditions -->
+        <div class="pr-card" onclick="openConditionLibrary('commentary-editor')">
+          <span class="pr-card-arrow">→</span>
+          <div class="pr-card-icon" style="background:#e8f4fd">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#1a6fa0"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          </div>
+          <div class="pr-card-title">Conditions</div>
+          <div class="pr-card-desc">Access your conditions library used in the development application assessment process.</div>
+        </div>
+
+        <!-- Assessment templates -->
+        <div class="pr-card" onclick="showToast('Assessment templates — coming soon')">
+          <span class="pr-card-arrow">→</span>
+          <div class="pr-card-icon" style="background:#fff4e5">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#8a5d00"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zm-9-4l-2-2-1.5 1.5L9 19l5-5-1.5-1.5L9 16z"/></svg>
+          </div>
+          <div class="pr-card-title">Assessment templates</div>
+          <div class="pr-card-desc">Review pre-approved assessment templates, used to assess with consistency and efficiency.</div>
+        </div>
+
+        <!-- Agencies -->
+        <div class="pr-card" onclick="goToAgencies()">
+          <span class="pr-card-arrow">→</span>
+          <div class="pr-card-icon" style="background:#f0eafa">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#5a3d9e"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+          </div>
+          <div class="pr-card-title">Agencies</div>
+          <div class="pr-card-desc">Manage your external referral agency list, set defaults and maintain contact details.</div>
+        </div>
+
+      </div>
+
+    </div><!-- /page -->
+  </div><!-- /screen-pr -->
 
 </div><!-- /main-area -->
 
@@ -1422,7 +1787,7 @@ tr[data-type="manual"] td { cursor: default; }
         <div class="rte-editor" id="commentary-editor" contenteditable="true" data-ph="Add your assessment commentary here…"></div>
       </div>
       <div style="margin-top:12px">
-        <button class="btn btn-secondary" onclick="openConditionLibrary()" style="font-size:12px">
+        <button class="btn btn-secondary" onclick="openConditionLibrary('commentary-editor')" style="font-size:12px">
           + Add from Condition Library
         </button>
       </div>
@@ -1461,27 +1826,33 @@ tr[data-type="manual"] td { cursor: default; }
   <div class="status-dropdown-item" data-class="reviewed" data-label="Complete"><span class="sd-dot" style="background:#7c4dbd"></span>Complete</div>
 </div>
 
+<!-- Screen number badge -->
+<div class="screen-num-badge" id="screen-num-badge">Screen 1</div>
+
 <!-- Proto Tag -->
-<div class="proto-tag">Build AU · External Referrals v1.4 · Concept only — does not conform to Objective Design Language · Commercial in confidence</div>
+<div class="proto-tag">Build AU · External Referrals v2.0 · Concept only — does not conform to Objective Design Language · Commercial in confidence</div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
 // ── NAVIGATION ─────────────────────────────
+const SCREEN_NUMS = { mc: 1, er: 2, review: 3, pr: 4, admin: 5 };
+
 function goTo(screen) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + screen).classList.add('active');
   window.scrollTo(0, 0);
   updateBreadcrumb(screen);
+  const badge = document.getElementById('screen-num-badge');
+  if (badge) badge.textContent = 'Screen ' + (SCREEN_NUMS[screen] || '');
 }
 
-function goToExtRefs() {
-  goTo('er');
-}
-function goToAdmin() {
-  goTo('admin');
-}
+function goToExtRefs() { goTo('er'); }
+function goToAdmin() { goTo('admin'); }
+function goToAgencies() { goTo('admin'); }
+function goToPlanningResources() { goTo('pr'); }
+function goToReview() { goTo('review'); }
 
 function updateBreadcrumb(screen) {
   const bc = document.getElementById('breadcrumb');
@@ -1494,13 +1865,25 @@ function updateBreadcrumb(screen) {
          <span class="bc-link" onclick="goTo('mc')">DA949778</span>
          <span class="bc-sep">/</span>
          <span class="bc-current">External Referrals</span>`,
+    review: `<span class="bc-link" onclick="goTo('mc')">Applications</span>
+             <span class="bc-sep">/</span>
+             <span class="bc-link" onclick="goTo('mc')">DA949778</span>
+             <span class="bc-sep">/</span>
+             <span class="bc-link" onclick="goToExtRefs()">External Referrals</span>
+             <span class="bc-sep">/</span>
+             <span class="bc-current">Referral review — Heritage Team</span>`,
+    pr: `<span class="bc-link" onclick="goTo('mc')">Applications</span>
+         <span class="bc-sep">/</span>
+         <span class="bc-link" onclick="goTo('mc')">DA949778</span>
+         <span class="bc-sep">/</span>
+         <span class="bc-current">Planning resources</span>`,
     admin: `<span class="bc-link" onclick="goTo('mc')">Applications</span>
             <span class="bc-sep">/</span>
             <span class="bc-link" onclick="goTo('mc')">DA949778</span>
             <span class="bc-sep">/</span>
-            <span class="bc-link" onclick="goToExtRefs()">External Referrals</span>
+            <span class="bc-link" onclick="goToPlanningResources()">Planning resources</span>
             <span class="bc-sep">/</span>
-            <span class="bc-current">Settings</span>`
+            <span class="bc-current">Agencies</span>`
   };
   bc.innerHTML = crumbs[screen] || crumbs.mc;
 }
@@ -1709,7 +2092,8 @@ function renderConditions(filter) {
 
 function filterConditions(val) { renderConditions(val); }
 
-function openConditionLibrary() {
+function openConditionLibrary(editorId) {
+  window._activeConditionEditor = editorId || 'commentary-editor';
   renderConditions('');
   openModal('modal-conditions');
 }
@@ -1718,12 +2102,33 @@ function addSelectedConditions() {
   const checked = [...document.querySelectorAll('#condition-list input[type="checkbox"]:checked')];
   if (!checked.length) { closeModal('modal-conditions'); return; }
   const selected = checked.map(cb => CONDITIONS.find(c => c.id === cb.value)).filter(Boolean);
-  const editor = document.getElementById('commentary-editor');
-  editor.focus();
-  const html = '<ul>' + selected.map(c => `<li>${c.text}</li>`).join('') + '</ul>';
-  document.execCommand('insertHTML', false, html);
-  closeModal('modal-conditions');
-  showToast(selected.length + ' condition' + (selected.length > 1 ? 's' : '') + ' added');
+
+  if (window._activeConditionEditor === 'review-editor') {
+    // Add to conditions list beneath the button rather than the RTE
+    const list = document.getElementById('review-conditions-list');
+    selected.forEach(c => {
+      const itemId = 'ac-' + c.id + '-' + Date.now();
+      list.insertAdjacentHTML('beforeend', `
+        <div class="applied-condition-item" id="${itemId}">
+          <div class="applied-condition-item-text">
+            <span class="applied-condition-item-tag">${c.tag}</span><br>${c.text}
+          </div>
+          <div class="applied-condition-item-actions">
+            <button class="btn btn-secondary btn-sm" style="font-size:10px;padding:3px 8px" onclick="showToast('Edit condition')">Edit</button>
+            <button class="btn-danger-sm" onclick="document.getElementById('${itemId}').remove();showToast('Condition removed')">Remove</button>
+          </div>
+        </div>`);
+    });
+    closeModal('modal-conditions');
+    showToast(selected.length + ' condition' + (selected.length > 1 ? 's' : '') + ' applied');
+  } else {
+    const editor = document.getElementById(window._activeConditionEditor || 'commentary-editor');
+    editor.focus();
+    const html = '<ul>' + selected.map(c => `<li>${c.text}</li>`).join('') + '</ul>';
+    document.execCommand('insertHTML', false, html);
+    closeModal('modal-conditions');
+    showToast(selected.length + ' condition' + (selected.length > 1 ? 's' : '') + ' added');
+  }
 }
 
 // ── MANUAL STATUS EDIT ─────────────────────
@@ -1803,6 +2208,135 @@ function setOutcome(id, sel) {
   document.getElementById(id + '-outcome').innerHTML =
     `<span class="outcome-val ${cls}">${val}</span>`;
   showToast('Outcome recorded: ' + val);
+}
+
+// ── SIDE PANEL SHOW / HIDE ─────────────────
+const PANEL_REFERRALS = [
+  { agency: 'Development Coordination Authority', isManual: false },
+  { agency: 'Transport for NSW',                  isManual: false },
+  { agency: 'NSW Heritage Office',                isManual: false },
+  { agency: 'NSW Police Force',                   isManual: true  },
+];
+
+let _selectedRow = null;
+
+function selectReferralRow(tr, idx) {
+  const split = document.querySelector('.er-content-split');
+  // Toggle: click same row again closes the panel
+  if (_selectedRow === tr) {
+    closeSidePanel();
+    return;
+  }
+  // Deselect previous row
+  if (_selectedRow) _selectedRow.classList.remove('row-selected');
+  _selectedRow = tr;
+  tr.classList.add('row-selected');
+
+  // Update panel content
+  const ref = PANEL_REFERRALS[idx] || {};
+  document.getElementById('panel-agency-name').textContent = ref.agency || 'Referral detail';
+
+  // Show panel
+  split.classList.add('panel-open');
+}
+
+function closeSidePanel() {
+  document.querySelector('.er-content-split').classList.remove('panel-open');
+  if (_selectedRow) { _selectedRow.classList.remove('row-selected'); _selectedRow = null; }
+}
+
+function panelSelectOutcomeChip(btn, type) {
+  document.querySelectorAll('#panel-outcome-chips .outcome-chip-btn').forEach(b => b.className = 'outcome-chip-btn');
+  const cls = { supported: 'sel-supported', 'not-supported': 'sel-not-supported', conditions: 'sel-conditions' };
+  btn.classList.add(cls[type] || '');
+  showToast('Outcome set: ' + btn.textContent.trim());
+}
+
+function openPanelCommentary() {
+  const agency = document.getElementById('panel-agency-name').textContent;
+  document.getElementById('commentary-agency-name').textContent = agency;
+  document.getElementById('commentary-editor').innerHTML = '';
+  openModal('modal-commentary');
+}
+
+// ── REVIEW SCREEN ──────────────────────────
+function completeReview() {
+  // Flip the inline status chip to Complete
+  const chip = document.getElementById('review-status-chip');
+  if (chip) { chip.className = 'status-chip reviewed'; chip.innerHTML = '<span class="dot"></span>Complete'; }
+  // Disable the Complete button
+  const btn = document.getElementById('review-complete-btn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+  showToast('Referral review completed — NSW Police Force');
+  // Brief pause so user sees chip flip before navigating back
+  setTimeout(() => {
+    // Reset chip for next visit
+    if (chip) { chip.className = 'status-chip received'; chip.innerHTML = '<span class="dot"></span>Responded'; }
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+    goToExtRefs();
+  }, 1200);
+}
+
+function selectOutcomeChip(btn, type) {
+  document.querySelectorAll('#outcome-chips .outcome-chip-btn').forEach(b => {
+    b.className = 'outcome-chip-btn';
+  });
+  const cls = { supported: 'sel-supported', 'not-supported': 'sel-not-supported', conditions: 'sel-conditions' };
+  btn.classList.add(cls[type] || '');
+}
+
+function rteReviewCmd(cmd) {
+  document.getElementById('review-editor').focus();
+  document.execCommand(cmd, false, null);
+}
+
+// ── SIDE PANEL ACCORDION ───────────────────
+function toggleDpSection(hdr) {
+  const body = hdr.nextElementSibling;
+  const chevron = hdr.querySelector('.dp-chevron');
+  body.classList.toggle('collapsed');
+  chevron.classList.toggle('open');
+}
+
+// ── COMMENT POSTING ────────────────────────
+function postSideComment() {
+  const inp = document.getElementById('side-comment-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  const thread = document.getElementById('side-comments');
+  const now = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  thread.insertAdjacentHTML('beforeend', `
+    <div class="comment-item">
+      <div class="comment-av sr">SR</div>
+      <div>
+        <div class="comment-meta"><strong>Sean Richards</strong> · ${dateStr}</div>
+        <div class="comment-text">${text.replace(/</g,'&lt;')}</div>
+      </div>
+    </div>`);
+  inp.value = '';
+  showToast('Comment posted');
+}
+
+function postReviewComment() {
+  const inp = document.getElementById('review-comment-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  const thread = document.getElementById('review-comments');
+  const now = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  thread.insertAdjacentHTML('beforeend', `
+    <div class="comment-item">
+      <div class="comment-av sr">SR</div>
+      <div>
+        <div class="comment-meta"><strong>Sean Richards</strong> · ${dateStr}</div>
+        <div class="comment-text">${text.replace(/</g,'&lt;')}</div>
+      </div>
+    </div>`);
+  inp.value = '';
+  showToast('Comment posted');
 }
 
 // ── PASSWORD GATE ──────────────────────────
