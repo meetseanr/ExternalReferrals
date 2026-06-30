@@ -500,56 +500,91 @@ tr[data-type="manual"] td { cursor: default; }
 /* ── PASSWORD GATE ── */
 #pw-gate {
   position: fixed; inset: 0; z-index: 9999;
-  background: var(--bg);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: flex; align-items: center; justify-content: center;
+  background: #e5e5e5;
   font-family: 'Inter', -apple-system, sans-serif;
 }
 #pw-gate.hidden { display: none; }
-.pw-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-light);
-  padding: 44px 48px 40px; width: 380px; text-align: center;
+.pw-shell {
+  display: flex; width: 780px; height: 490px;
+  border-radius: 20px; overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.20), 0 4px 20px rgba(0,0,0,0.10);
 }
-.pw-mark {
-  width: 40px; height: 40px; border-radius: 10px; background: var(--ink);
+
+/* Left panel */
+.pw-left {
+  width: 42%; background: #1a1a1a;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 30px 32px; position: relative; overflow: hidden;
+}
+.pw-left-circle {
+  position: absolute; width: 300px; height: 300px; border-radius: 50%;
+  background: rgba(255,255,255,0.05); top: -70px; left: 30px; pointer-events: none;
+}
+.pw-left-icon {
+  width: 38px; height: 38px; border-radius: 9px; background: #2e2e2e;
   display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 20px;
+  flex-shrink: 0; position: relative; z-index: 1;
 }
-.pw-mark svg { width: 22px; height: 22px; fill: #fff; }
-.pw-brand {
-  font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.2px;
-  margin-bottom: 2px;
+.pw-left-icon svg { width: 18px; height: 18px; fill: #fff; }
+.pw-left-body {
+  flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
+  padding-bottom: 36px; position: relative; z-index: 1;
 }
-.pw-brand span { font-weight: 300; color: var(--ink-light); margin-left: 5px; font-size: 13px; }
-.pw-divider { width: 32px; height: 1px; background: var(--border); margin: 16px auto; }
+.pw-left-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.3px; text-transform: uppercase;
+  color: #5a5a5a; margin-bottom: 10px;
+}
+.pw-left-title {
+  font-size: 22px; font-weight: 700; color: #fff; line-height: 1.25; letter-spacing: -0.4px;
+}
+.pw-left-meta { position: relative; z-index: 1; }
+.pw-meta-item { margin-bottom: 12px; }
+.pw-meta-item:last-child { margin-bottom: 0; }
+.pw-meta-label {
+  font-size: 8px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  color: #4a4a4a; margin-bottom: 2px;
+}
+.pw-meta-value { font-size: 13px; font-weight: 500; color: #bbb; }
+
+/* Right panel */
+.pw-right {
+  flex: 1; background: #fff;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 36px 40px 28px;
+}
+.pw-right-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
 .pw-heading {
-  font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 6px; letter-spacing: -0.3px;
+  font-size: 22px; font-weight: 700; color: #111; margin-bottom: 6px; letter-spacing: -0.4px;
 }
 .pw-sub {
-  font-size: 12px; color: var(--ink-light); margin-bottom: 28px; line-height: 1.6;
+  font-size: 13px; color: #888; margin-bottom: 22px; line-height: 1.6;
+}
+.pw-callout {
+  background: #f5f5f7; border-left: 3px solid #d0d0d5; border-radius: 6px;
+  padding: 12px 14px; font-size: 12px; color: #555; line-height: 1.65; margin-bottom: 24px;
+}
+.pw-callout b { color: #1d1d1f; font-weight: 600; }
+.pw-field-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  color: #999; margin-bottom: 7px;
 }
 .pw-input {
-  width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm); font-size: 14px; font-family: inherit;
-  outline: none; transition: border-color 0.15s, box-shadow 0.15s; margin-bottom: 12px;
-  color: var(--ink); background: var(--card); box-sizing: border-box;
+  width: 100%; padding: 12px 14px; border: none;
+  border-radius: 9px; font-size: 14px; font-family: inherit;
+  outline: none; background: #f5f5f7; color: #111;
+  transition: box-shadow 0.15s; margin-bottom: 10px; box-sizing: border-box;
 }
-.pw-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(45,106,45,0.10); }
-.pw-input.error { border-color: var(--negative); }
+.pw-input:focus { box-shadow: 0 0 0 3px rgba(0,0,0,0.10); }
+.pw-input.error { box-shadow: 0 0 0 3px rgba(255,59,48,0.18); }
 .pw-btn {
-  width: 100%; padding: 11px; background: var(--green); color: #fff;
-  border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
-  font-family: inherit; cursor: pointer; transition: background 0.15s; letter-spacing: -0.1px;
+  width: 100%; padding: 12px; background: #111; color: #fff;
+  border: none; border-radius: 9px; font-size: 14px; font-weight: 600;
+  font-family: inherit; cursor: pointer; transition: background 0.15s;
 }
-.pw-btn:hover { background: #245824; }
-.pw-error {
-  font-size: 11px; color: var(--negative); margin-top: 8px; min-height: 16px;
-}
-.pw-footer {
-  margin-top: 24px; font-size: 10px; color: var(--ink-faint); line-height: 1.5;
-}
+.pw-btn:hover { background: #333; }
+.pw-error { font-size: 11px; color: #ff3b30; margin-top: 6px; min-height: 16px; }
+.pw-right-footer { font-size: 11px; color: #c0c0c0; }
 
 .proto-tag {
   position: fixed; bottom: 14px; right: 14px; font-size: 10px; color: var(--ink-faint);
@@ -694,20 +729,45 @@ tr[data-type="manual"] td { cursor: default; }
 
 <!-- Password Gate -->
 <div id="pw-gate">
-  <div class="pw-card">
-    <div class="pw-mark">
-      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+<div class="pw-shell">
+  <!-- Left panel -->
+  <div class="pw-left">
+    <div class="pw-left-circle"></div>
+    <div class="pw-left-icon">
+      <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
     </div>
-    <div class="pw-brand">Build AU <span>by Objective</span></div>
-    <div class="pw-divider"></div>
-    <div class="pw-heading">External Referrals</div>
-    <div class="pw-sub">Concept demonstration — enter the access code to continue.</div>
-    <input type="password" id="pw-input" class="pw-input" placeholder="Access code" onkeydown="if(event.key==='Enter')checkPw()">
-    <button class="pw-btn" onclick="checkPw()">Continue</button>
-    <div class="pw-error" id="pw-error"></div>
-    <div class="pw-footer">This is a concept only and does not represent a final product.</div>
+    <div class="pw-left-body">
+      <div class="pw-left-label">Build AU</div>
+      <div class="pw-left-title">External Referrals Prototype</div>
+    </div>
+    <div class="pw-left-meta">
+      <div class="pw-meta-item">
+        <div class="pw-meta-label">Version</div>
+        <div class="pw-meta-value">v2.2</div>
+      </div>
+      <div class="pw-meta-item" style="margin-bottom:0">
+        <div class="pw-meta-label">Last Updated</div>
+        <div class="pw-meta-value">June 2026</div>
+      </div>
+    </div>
   </div>
-</div>
+  <!-- Right panel -->
+  <div class="pw-right">
+    <div class="pw-right-body">
+      <div class="pw-heading">Restricted access</div>
+      <div class="pw-sub">Enter the password below to view this demonstrator.</div>
+      <div class="pw-callout">
+        This is a <b>demonstrator</b> for use to explore concepts. It is not a product and is not designed using ODL. For questions, contact <b>Sean Richards</b>.
+      </div>
+      <div class="pw-field-label">Password</div>
+      <input type="password" id="pw-input" class="pw-input" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')checkPw()">
+      <button class="pw-btn" onclick="checkPw()">Continue</button>
+      <div class="pw-error" id="pw-error"></div>
+    </div>
+    <div class="pw-right-footer">Objective Corporation · Concept demonstrator only</div>
+  </div>
+</div><!-- /.pw-shell -->
+</div><!-- /#pw-gate -->
 
 <!-- ═══════════════════════════════════════════════════
      SHARED SIDEBAR
@@ -1120,8 +1180,6 @@ tr[data-type="manual"] td { cursor: default; }
         <div>
           <div class="er-title">
             External Referrals
-            <span class="panel-count amber">4 active</span>
-            <span class="panel-count red">1 blocking</span>
           </div>
           <div class="er-subtitle">DA949778 · 254 Samuel Street, Surry Hills NSW 2010 · 43 days</div>
         </div>
@@ -1697,23 +1755,15 @@ tr[data-type="manual"] td { cursor: default; }
         <label class="form-label">Agency Name</label>
         <input class="form-input" type="text" id="agency-name-input" placeholder="e.g. Sydney Water Corporation" />
       </div>
-      <div class="form-grid-2">
-        <div class="form-group">
-          <label class="form-label">Default Referral Type</label>
-          <select class="form-select">
-            <option>Referral</option>
-            <option>Concurrence</option>
-            <option>Integrated Development</option>
-            <option>Notification / Information</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Status</label>
-          <select class="form-select">
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
-        </div>
+      <div class="form-group">
+        <label class="form-label">Default Referral Type</label>
+        <select class="form-select">
+          <option>Referral</option>
+          <option>Concurrence</option>
+          <option>Integrated Development</option>
+          <option>Notification / Information</option>
+          <option>Advice</option>
+        </select>
       </div>
       <div class="form-group">
         <label class="form-label">Response Duration</label>
